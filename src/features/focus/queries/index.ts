@@ -4,9 +4,11 @@ import {
   createSessionService,
   deleteCategoryService,
   getAllCategoriesService,
+  getAllSessionsService,
   sessionActionService,
 } from "../services";
 import { categoryKeys } from "./query-keys";
+import type { GetAllSessions } from "../types";
 
 export const useGetAllCategories = () =>
   useQuery({
@@ -22,6 +24,12 @@ export const useDeleteCategory = () =>
 export const useCreateCategory = () =>
   useMutation({
     mutationFn: createCategoryService,
+  });
+
+export const useGetAllSessions = ({ startDate, endDate }: GetAllSessions) =>
+  useQuery({
+    queryKey: ["sessions", startDate, endDate],
+    queryFn: () => getAllSessionsService({ startDate, endDate }),
   });
 
 export const useCreateSession = () =>

@@ -25,11 +25,13 @@ import {
 import { createFileRoute } from "@tanstack/react-router";
 import {
   Anchor,
+  CircleCheckBig,
   Sailboat,
   Settings,
   Ship,
   ShipWheel,
   Waves,
+  WavesIcon,
 } from "lucide-react";
 import {
   Tooltip,
@@ -122,7 +124,7 @@ function RouteComponent() {
         },
       });
       clearInterval(intervalRef.current);
-      intervalRef.current = null;
+      // intervalRef.current = null;
       setIsRunning(false);
     }
   };
@@ -168,6 +170,14 @@ function RouteComponent() {
   };
   return (
     <div className="container w-full">
+      <div className="flex items-center gap-5 justify-end mb-5">
+        <div className="flex items-center gap-1.5">
+          <ShipWheel size={18} /> 50m
+        </div>
+        <div className="flex items-center gap-1.5">
+          <CircleCheckBig size={18} /> 50m
+        </div>
+      </div>
       <div className="flex items-center justify-center w-full">
         <div>
           <Select

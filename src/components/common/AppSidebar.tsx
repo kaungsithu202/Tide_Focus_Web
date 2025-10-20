@@ -1,4 +1,15 @@
-import { Calendar, Home, Inbox, Search, Settings } from "lucide-react";
+import {
+  Calendar,
+  ChartNoAxesColumnIcon,
+  Home,
+  Inbox,
+  Search,
+  Settings,
+  Ship,
+  ShipIcon,
+  SquareChartGantt,
+  SquareChartGanttIcon,
+} from "lucide-react";
 
 import {
   Sidebar,
@@ -10,23 +21,24 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
+import { Link } from "@tanstack/react-router";
 
 // Menu items.
 const items = [
   {
-    title: "Home",
-    url: "#",
-    icon: Home,
+    title: "Focus",
+    url: "/focus",
+    icon: ShipIcon,
   },
   {
-    title: "Inbox",
-    url: "#",
-    icon: Inbox,
+    title: "Review",
+    url: "/review",
+    icon: SquareChartGanttIcon,
   },
   {
-    title: "Calendar",
+    title: "Overview",
     url: "#",
-    icon: Calendar,
+    icon: ChartNoAxesColumnIcon,
   },
   {
     title: "Search",
@@ -51,10 +63,10 @@ export function AppSidebar() {
               {items.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild>
-                    <a href={item.url}>
+                    <Link to={item.url}>
                       <item.icon />
                       <span>{item.title}</span>
-                    </a>
+                    </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}

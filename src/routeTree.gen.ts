@@ -13,6 +13,8 @@ import { Route as LoginRouteImport } from './routes/login'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as PathlessLayoutRouteImport } from './routes/_pathlessLayout'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as PathlessLayoutReviewRouteImport } from './routes/_pathlessLayout/review'
+import { Route as PathlessLayoutOverviewRouteImport } from './routes/_pathlessLayout/overview'
 import { Route as PathlessLayoutFocusRouteImport } from './routes/_pathlessLayout/focus'
 
 const LoginRoute = LoginRouteImport.update({
@@ -34,6 +36,16 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PathlessLayoutReviewRoute = PathlessLayoutReviewRouteImport.update({
+  id: '/review',
+  path: '/review',
+  getParentRoute: () => PathlessLayoutRoute,
+} as any)
+const PathlessLayoutOverviewRoute = PathlessLayoutOverviewRouteImport.update({
+  id: '/overview',
+  path: '/overview',
+  getParentRoute: () => PathlessLayoutRoute,
+} as any)
 const PathlessLayoutFocusRoute = PathlessLayoutFocusRouteImport.update({
   id: '/focus',
   path: '/focus',
@@ -45,12 +57,16 @@ export interface FileRoutesByFullPath {
   '/about': typeof AboutRoute
   '/login': typeof LoginRoute
   '/focus': typeof PathlessLayoutFocusRoute
+  '/overview': typeof PathlessLayoutOverviewRoute
+  '/review': typeof PathlessLayoutReviewRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/login': typeof LoginRoute
   '/focus': typeof PathlessLayoutFocusRoute
+  '/overview': typeof PathlessLayoutOverviewRoute
+  '/review': typeof PathlessLayoutReviewRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -59,12 +75,14 @@ export interface FileRoutesById {
   '/about': typeof AboutRoute
   '/login': typeof LoginRoute
   '/_pathlessLayout/focus': typeof PathlessLayoutFocusRoute
+  '/_pathlessLayout/overview': typeof PathlessLayoutOverviewRoute
+  '/_pathlessLayout/review': typeof PathlessLayoutReviewRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/about' | '/login' | '/focus'
+  fullPaths: '/' | '/about' | '/login' | '/focus' | '/overview' | '/review'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/about' | '/login' | '/focus'
+  to: '/' | '/about' | '/login' | '/focus' | '/overview' | '/review'
   id:
     | '__root__'
     | '/'
@@ -72,6 +90,8 @@ export interface FileRouteTypes {
     | '/about'
     | '/login'
     | '/_pathlessLayout/focus'
+    | '/_pathlessLayout/overview'
+    | '/_pathlessLayout/review'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -111,6 +131,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_pathlessLayout/review': {
+      id: '/_pathlessLayout/review'
+      path: '/review'
+      fullPath: '/review'
+      preLoaderRoute: typeof PathlessLayoutReviewRouteImport
+      parentRoute: typeof PathlessLayoutRoute
+    }
+    '/_pathlessLayout/overview': {
+      id: '/_pathlessLayout/overview'
+      path: '/overview'
+      fullPath: '/overview'
+      preLoaderRoute: typeof PathlessLayoutOverviewRouteImport
+      parentRoute: typeof PathlessLayoutRoute
+    }
     '/_pathlessLayout/focus': {
       id: '/_pathlessLayout/focus'
       path: '/focus'
@@ -123,10 +157,14 @@ declare module '@tanstack/react-router' {
 
 interface PathlessLayoutRouteChildren {
   PathlessLayoutFocusRoute: typeof PathlessLayoutFocusRoute
+  PathlessLayoutOverviewRoute: typeof PathlessLayoutOverviewRoute
+  PathlessLayoutReviewRoute: typeof PathlessLayoutReviewRoute
 }
 
 const PathlessLayoutRouteChildren: PathlessLayoutRouteChildren = {
   PathlessLayoutFocusRoute: PathlessLayoutFocusRoute,
+  PathlessLayoutOverviewRoute: PathlessLayoutOverviewRoute,
+  PathlessLayoutReviewRoute: PathlessLayoutReviewRoute,
 }
 
 const PathlessLayoutRouteWithChildren = PathlessLayoutRoute._addFileChildren(

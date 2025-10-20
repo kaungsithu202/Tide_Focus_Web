@@ -39,3 +39,23 @@ export interface CreateSessionResponse {
   createdAt: string;
   updatedAt: string;
 }
+
+export interface GetAllSessions {
+  startDate: string;
+  endDate: string;
+}
+
+interface SessionCategory {
+  name: string;
+  id: number;
+  color: string;
+}
+
+export interface Session {
+  id: number;
+  startedAt: string;
+  endedAt: string;
+  elapsedSeconds: number;
+  isCompleted: boolean;
+  category: SessionCategory;
+}

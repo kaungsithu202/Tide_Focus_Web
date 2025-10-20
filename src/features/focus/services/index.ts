@@ -4,6 +4,8 @@ import type {
   Category,
   CreateCategory,
   CreateSessionResponse,
+  GetAllSessions,
+  Session,
   SessionAction,
   SessionPayload,
 } from "../types";
@@ -32,8 +34,16 @@ export const createSessionService = async (
   return data;
 };
 
-export const getAllSessionsService = async (): Promise<any> => {
-  const { data } = await axiosClient.get(SESSIONS);
+export const getAllSessionsService = async ({
+  startDate,
+  endDate,
+}: GetAllSessions): Promise<Session[]> => {
+  const { data } = await axiosClient.get(SESSIONS, {
+    params: {
+      startDate,
+      endDate,
+    },
+  });
   return data;
 };
 
