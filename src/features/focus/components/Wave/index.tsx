@@ -3,14 +3,16 @@ import { useDeleteCategory } from "../../queries";
 import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
 import { categoryKeys } from "../../queries/query-keys";
+import type { Category } from "../../types";
+import type { Dispatch, SetStateAction } from "react";
 
 interface Props {
-  name: string;
-  color: string;
-  id: number;
+  category: Category;
+  onSetMode: Dispatch<SetStateAction<string>>;
+  onSelectCategory: Dispatch<SetStateAction<Category | null>>;
 }
 
-const Wave = ({ name, color, id }: Props) => {
+const Wave = ({ category, onSelectCategory, onSetMode }: Props) => {
   const queryClient = useQueryClient();
 
   const { mutateAsync: deleteCategoryAsync } = useDeleteCategory();
@@ -30,21 +32,29 @@ const Wave = ({ name, color, id }: Props) => {
     );
   };
   return (
-    <div className="flex items-center gap-3 w-full p-1 hover:bg-gray-100 rounded-md  transition-colors duration-200">
+    <button
+      onClick={() => {
+        onSetMode("editWave");
+        onSelectCategory(category);
+      }}
+      className="flex items-center gap-3 w-full p-1 hover:bg-gray-100 rounded-md  transition-colors duration-200"
+    >
       <div className="flex items-center gap-3 p-1.5 border border-gray-300 rounded-md text-[10px] w-full">
         <div
           className="size-2.5 rounded-full"
-          style={{ backgroundColor: color }}
+          style={{ backgroundColor: category.color }}
         />
-        <span>{name}</span>
+        <span>{category.name}</span>
       </div>
-      <button
-        onClick={() => handleDelete(id)}
+      <div
+        onClick={() => {
+          handleDelete(category.id);
+        }}
         className=" hover:bg-red-100 hover:text-red-500 p-1.5 rounded-xl transition-colors duration-200"
       >
         <X size={14} />
-      </button>
-    </div>
+      </div>
+    </button>
   );
 };
 

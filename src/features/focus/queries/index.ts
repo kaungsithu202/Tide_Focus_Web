@@ -26,10 +26,10 @@ export const useCreateCategory = () =>
     mutationFn: createCategoryService,
   });
 
-export const useGetAllSessions = ({ startDate, endDate }: GetAllSessions) =>
+export const useGetAllSessions = (payload?: GetAllSessions) =>
   useQuery({
-    queryKey: ["sessions", startDate, endDate],
-    queryFn: () => getAllSessionsService({ startDate, endDate }),
+    queryKey: ["sessions", payload?.startDate, payload?.endDate],
+    queryFn: () => getAllSessionsService(payload),
   });
 
 export const useCreateSession = () =>

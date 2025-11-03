@@ -5,9 +5,3 @@ export const useLogin = () =>
   useMutation({
     mutationFn: loginService,
   });
-
-export const useGetCurrentUser = () =>
-  useQuery({
-    queryFn: currentService,
-    queryKey: ["current"],
-  });

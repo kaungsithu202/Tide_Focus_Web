@@ -34,14 +34,13 @@ export const createSessionService = async (
   return data;
 };
 
-export const getAllSessionsService = async ({
-  startDate,
-  endDate,
-}: GetAllSessions): Promise<Session[]> => {
+export const getAllSessionsService = async (
+  payload?: GetAllSessions
+): Promise<Session[]> => {
   const { data } = await axiosClient.get(SESSIONS, {
     params: {
-      startDate,
-      endDate,
+      startDate: payload?.startDate,
+      endDate: payload?.endDate,
     },
   });
   return data;

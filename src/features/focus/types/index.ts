@@ -7,6 +7,10 @@ export interface Category {
   updatedAt: Date;
 }
 
+export enum TimerType {
+  TIMER = "timer",
+  STOPWATCH = "stopwatch",
+}
 export interface CreateCategory {
   name: string;
   color: string;
@@ -41,8 +45,8 @@ export interface CreateSessionResponse {
 }
 
 export interface GetAllSessions {
-  startDate: string;
-  endDate: string;
+  startDate?: string;
+  endDate?: string;
 }
 
 interface SessionCategory {
@@ -57,5 +61,6 @@ export interface Session {
   endedAt: string;
   elapsedSeconds: number;
   isCompleted: boolean;
+  type: TimerType;
   category: SessionCategory;
 }

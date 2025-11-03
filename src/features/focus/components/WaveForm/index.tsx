@@ -17,6 +17,9 @@ import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
 import { categoryKeys } from "../../queries/query-keys";
 import useUnsavedChangesWarning from "@/hooks/useUnsavedWarn";
+import IfElse from "@/components/common/IfElse";
+import type { Category } from "../../types";
+import { useEffect, type Dispatch, type SetStateAction } from "react";
 
 const formSchema = z.object({
   name: z.string().min(2, {
@@ -27,18 +30,41 @@ const formSchema = z.object({
   }),
 });
 
-const WaveForm = () => {
+interface Props {
+  selectedCategory: Category | null;
+  mode: string;
+  onSelectCategory: Dispatch<SetStateAction<Category | null>>;
+}
+
+const WaveForm = ({ selectedCategory, mode, onSelectCategory }: Props) => {
   const queryClient = useQueryClient();
 
   const { mutateAsync: createCategoryAsync } = useCreateCategory();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
-      name: "",
-      color: "#000",
-    },
+    defaultValues: selectedCategory
+      ? {
+          name: selectedCategory.name,
+          color: selectedCategory.color,
+        }
+      : { name: "", color: "#000" },
   });
+
+  useEffect(() => {
+    if (mode == "addWave") {
+      onSelectCategory(null);
+      form.reset({ name: "", color: "#000" });
+    }
+  }, [mode]);
+
+  useEffect(() => {
+    if (selectedCategory)
+      form.reset({
+        name: selectedCategory.name,
+        color: selectedCategory.color,
+      });
+  }, [selectedCategory, form.reset]);
 
   function onSubmit(values: z.infer<typeof formSchema>) {
     // Do something with the form values.
@@ -68,7 +94,11 @@ const WaveForm = () => {
           render={({ field }) => (
             <FormItem>
               <FormLabel className="text-xs font-normal">
-                Add New Wave
+                <IfElse
+                  isTrue={!!selectedCategory}
+                  ifBlock="Edit Wave"
+                  elseBlock="Add New Wave"
+                />
               </FormLabel>
               <FormControl className="mt-1">
                 <Input placeholder="Wave name" {...field} />
@@ -115,17 +145,15 @@ const WaveForm = () => {
                   color={field.value}
                   onChange={(color) => {
                     field.onChange(color.hex);
-                    // setHex(color.hex);
                   }}
                 />
-                {/* <Input placeholder="Wave name" {...field} /> */}
               </FormControl>
 
               <FormMessage />
             </FormItem>
           )}
         />
-        <Button type="submit" className="w-full mt-5">
+        <Button type="submit" variant="ocean" className="w-full mt-5">
           Submit
         </Button>
       </form>

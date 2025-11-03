@@ -1,21 +1,11 @@
 import { REFRESH_TOKEN } from "@/constants/endpoints";
 import { authGetter, authSetter } from "@/store";
-import axios, {
-  isAxiosError,
-  type AxiosRequestConfig,
-  type AxiosResponse,
-} from "axios";
+import axios, { type AxiosRequestConfig } from "axios";
 
 declare module "axios" {
   interface AxiosRequestConfig {
     _retry?: boolean;
   }
-}
-
-interface RetryQueueItem {
-  config: AxiosRequestConfig;
-  resolve: (value: AxiosResponse | PromiseLike<AxiosResponse>) => void;
-  reject: (reason?: any) => void;
 }
 
 const axiosClient = axios.create({
@@ -27,116 +17,98 @@ const axiosClient = axios.create({
   withCredentials: true,
 });
 
-let isRefreshingR = false;
+type RetryQueueItem = {
+  resolve: (token: string) => void;
+  reject: (error: any) => void;
+};
 
-const requestQueue: Array<() => void> = [];
+let refreshAndRetryQueue: RetryQueueItem[] = [];
 
-axiosClient.interceptors.request.use(async (config) => {
-  const token = authGetter();
-
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-
-  return config;
-});
-
-const refreshAndRetryQueue: RetryQueueItem[] = [];
-
-// Flag to prevent multiple token refresh requests
 let isRefreshing = false;
+
+axiosClient.interceptors.request.use(
+  async (config) => {
+    const token = authGetter();
+
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
+
+function subscribeTokenRefresh(
+  resolve: (token: string) => void,
+  reject: (error: any) => void
+) {
+  refreshAndRetryQueue.push({ resolve, reject });
+}
+
+function onRefreshed(token: string) {
+  refreshAndRetryQueue.forEach((item) => item.resolve(token));
+  refreshAndRetryQueue = [];
+}
+
+function onRefreshFailed(error: any) {
+  refreshAndRetryQueue.forEach((item) => item.reject(error));
+  refreshAndRetryQueue = [];
+}
 
 axiosClient.interceptors.response.use(
   (response) => response,
-  async (error) => {
-    const originalRequest: AxiosRequestConfig = error.config;
-
-    const token = authGetter();
-
-    console.log("token response", token);
-
-    if (error.response?.status === 401 && !originalRequest._retry) {
-      originalRequest._retry = true; // Prevent infinite retry loops
-      console.log("trigger retry");
-
+  async (err) => {
+    const { config, response } = err;
+    const originalRequest: AxiosRequestConfig = config;
+    if (response && response.status === 401 && !originalRequest._retry) {
+      console.log("trigger if", isRefreshing);
       if (!isRefreshing) {
         isRefreshing = true;
-
         try {
-          const refreshRes = await axiosClient.post(REFRESH_TOKEN); // cookie sent automatically
-          const newToken = refreshRes.data.accessToken;
-          console.log("newToken", newToken);
-          authSetter(newToken);
+          const refreshRes = await axiosClient.post(REFRESH_TOKEN);
 
-          if (newToken) {
-            // Update default headers for future requests
-            axiosClient.defaults.headers.common[
-              "Authorization"
-            ] = `Bearer ${newToken}`;
-
-            // Update the original request header
-            originalRequest.headers = originalRequest.headers || {};
-            originalRequest.headers["Authorization"] = `Bearer ${newToken}`;
-
-            // Process all queued requests
-            refreshAndRetryQueue.forEach(({ config, resolve, reject }) => {
-              config.headers = config.headers || {};
-              config.headers["Authorization"] = `Bearer ${newToken}`;
-
-              axiosClient.request(config).then(resolve).catch(reject);
-            });
-
-            // Clear the queue
-            refreshAndRetryQueue.length = 0;
-
-            // Retry the original request
-            return axiosClient(originalRequest);
-          } else {
-            // Refresh failed - reject all queued requests
-            refreshAndRetryQueue.forEach(({ reject }) => {
-              reject(new Error("Token refresh failed"));
-            });
-            refreshAndRetryQueue.length = 0;
-
-            // Cleanup and redirect
-
-            delete axiosClient.defaults.headers.common["Authorization"];
-            window.location.href = "/login";
-          }
-        } catch (err) {
-          // Refresh failed - reject all queued requests
-          refreshAndRetryQueue.forEach(({ reject }) => {
-            reject(err);
-          });
-          refreshAndRetryQueue.length = 0;
-
-          // Cleanup and redirect
-
-          delete axiosClient.defaults.headers.common["Authorization"];
-          window.location.href = "/login";
-
-          if (isAxiosError(err)) {
-            throw new Error(
-              err.response?.data?.RespDescription || "Token refresh failed"
-            );
-          }
-          throw err;
-        } finally {
+          console.log("refreshRes", refreshRes);
+          const access_token = refreshRes.data.accessToken;
+          authSetter(access_token);
+          axiosClient.defaults.headers.common[
+            "Authorization"
+          ] = `Bearer ${access_token}`;
           isRefreshing = false;
+          onRefreshed(access_token);
+          await Promise.all(
+            refreshAndRetryQueue.map(({ resolve }) => resolve(access_token))
+          );
+          return axios(originalRequest);
+        } catch (err) {
+          console.log("❌ Refresh token failed:", err);
+          isRefreshing = false;
+          onRefreshFailed(err);
+          authSetter(null);
+          console.log("➡ Redirecting to login");
+          window.location.href = "/login";
+          return Promise.reject(err);
+        } finally {
+          refreshAndRetryQueue = [];
         }
       }
-
-      // Add the original request to the queue
-      return new Promise<AxiosResponse>((resolve, reject) => {
-        refreshAndRetryQueue.push({
-          config: originalRequest,
-          resolve,
-          reject,
-        });
-      });
+      originalRequest._retry = true;
+      // return new Promise((resolve, reject) => {
+      //   subscribeTokenRefresh(
+      //     (token: string) => {
+      //       console.log("subscribeTokenRefresh resolve", token);
+      //       if (!originalRequest.headers) originalRequest.headers = {};
+      //       originalRequest.headers["Authorization"] = `Bearer ${token}`;
+      //       resolve(axios(originalRequest));
+      //     },
+      //     (error) => {
+      //       console.log("subscribeTokenRefresh error", error);
+      //       reject(error);
+      //     }
+      //   );
+      // });
     }
-
-    return Promise.reject(error);
+    return Promise.reject(err);
   }
 );
 

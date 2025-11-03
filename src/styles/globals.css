@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "tw-animate-css";
+@import url("https://fonts.googleapis.com/css2?family=Original+Surfer&display=swap");
 
 @custom-variant dark (&:is(.dark *));
 
@@ -74,6 +75,13 @@
   --sidebar-ring: oklch(0.439 0 0);
 }
 
+@layer utilities {
+  input[type="number"]::-webkit-inner-spin-button,
+  input[type="number"]::-webkit-outer-spin-button {
+    @apply appearance-none;
+  }
+}
+
 @utility container {
   margin-inline: auto;
   padding-inline: 2rem;
@@ -84,9 +92,35 @@
   padding-inline: 14rem;
 }
 
+@font-face {
+  font-family: "Toucon";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("/public/fonts/Toucon__.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "Ocean";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("/public/fonts/ocean.ttf") format("truetype");
+}
+
 @theme inline {
+  --font-toucon: "Toucon", sans-serif;
+  --font-ocean: "ocean", sans-serif;
+  --font-original-surfer: "Original Surfer", sans-serif;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+
+  --color-ocean-900: #02367b;
+  --color-ocean-800: #0078d4;
+  --color-ocean-700: #006ca5;
+  --color-ocean-500: #0496c7;
+  --color-ocean-300: #04bade;
+  --color-ocean-100: #55e2e9;
   --color-card: var(--card);
   --color-card-foreground: var(--card-foreground);
   --color-popover: var(--popover);

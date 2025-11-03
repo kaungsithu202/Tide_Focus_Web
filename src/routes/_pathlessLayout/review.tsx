@@ -3,6 +3,11 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import {
   Empty,
   EmptyContent,
   EmptyDescription,
@@ -11,13 +16,21 @@ import {
   EmptyTitle,
 } from "@/components/ui/empty";
 import { useGetAllSessions } from "@/features/focus/queries";
+import { TimerType } from "@/features/focus/types";
 import { formatTimeHMMA, getFocusTime } from "@/lib/datetime";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import dayjs from "dayjs";
 import {
-  BadgeCheck,
+  startOfDay,
+  endOfDay,
+  addDays,
+  subDays,
+  isSameDay,
+  format,
+} from "date-fns";
+import {
   ChevronLeft,
   ChevronRight,
+  CircleCheckBigIcon,
   Clock4Icon,
   HourglassIcon,
   PenIcon,
@@ -32,18 +45,19 @@ export const Route = createFileRoute("/_pathlessLayout/review")({
 });
 
 function RouteComponent() {
-  const [date, setDate] = useState(dayjs());
+  const [date, setDate] = useState(new Date()); // use native Date instead of dayjs
 
-  const startDate = date.startOf("day").toISOString();
-  const endDate = date.endOf("day").toISOString();
+  const startDate = startOfDay(date).toISOString();
+  const endDate = endOfDay(date).toISOString();
 
   const { data: sessions } = useGetAllSessions({ startDate, endDate });
 
-  const handleNext = () => setDate((prev) => prev.add(1, "day"));
-  const handlePrev = () => setDate((prev) => prev.subtract(1, "day"));
+  const handleNext = () => setDate((prev) => addDays(prev, 1));
+  const handlePrev = () => setDate((prev) => subDays(prev, 1));
 
-  const isYesterday = date.isSame(dayjs().subtract(1, "day"), "day");
-  const isToday = date.isSame(dayjs(), "day");
+  const today = new Date();
+  const isYesterday = isSameDay(date, subDays(today, 1));
+  const isToday = isSameDay(date, today);
 
   const totalFocusTime = sessions?.reduce(
     (acc, curr) => acc + curr.elapsedSeconds,
@@ -52,13 +66,13 @@ function RouteComponent() {
 
   return (
     <div className="container-md">
-      <div className="flex items-center justify-between my-8">
+      <div className="flex items-center justify-between my-5">
         <div className="flex items-center gap-5">
           <Button variant="ghost" size="icon" onClick={handlePrev}>
             <ChevronLeft strokeWidth={2} />
           </Button>
           <span className="font-semibold text-xl">
-            {date.format("MMM D, YYYY")}
+            {format(date, "MMM d, yyyy")}
           </span>
           <Button
             variant="ghost"
@@ -97,7 +111,7 @@ function RouteComponent() {
             </div>
           </div>
           <div className="flex items-center gap-3">
-            <BadgeCheck size={18} />
+            <CircleCheckBigIcon size={18} />
             <div>
               <p className="text-[11px] text-gray-500">Sessions</p>
               <p className="text-xs font-medium">{sessions?.length}</p>
@@ -127,11 +141,7 @@ function RouteComponent() {
         elseBlock={
           <div className=" grid gap-3">
             {sessions?.map((s) => (
-              <Card
-                style={{
-                  filter: `drop-shadow(1px 1.5px 2px ${s.category.color})`,
-                }}
-              >
+              <Card className="drop-shadow-sm drop-shadow-sky-100">
                 <CardContent className="flex items-center justify-between  gap-3">
                   <div className="flex items-center gap-20">
                     <div className="grid place-items-center gap-2">
@@ -141,13 +151,34 @@ function RouteComponent() {
                       <Badge className="bg-blue-100 text-blue-800">
                         <span>Focus</span>
                       </Badge>
-                      <TimerIcon size={14} color="#6c757d " />
+                      <IfElse
+                        isTrue={s.type === TimerType.TIMER}
+                        ifBlock={
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <TimerIcon size={14} color="#6c757d" />
+                            </TooltipTrigger>
+                            <TooltipContent className="text-[10px]">
+                              <p>Timer Mode</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        }
+                        elseBlock={
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Clock4Icon size={14} color="#6c757d" />
+                            </TooltipTrigger>
+                            <TooltipContent className="text-[10px]">
+                              <p>Stopwatch Mode</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        }
+                      />
                     </div>
 
                     <div>
                       <p className="text-lg font-medium">Focused Work</p>
                       <p className="flex items-center gap-3 text-xs text-gray-600">
-                        <Clock4Icon size={14} color="#6c757d" />
                         {formatTimeHMMA(s?.startedAt)} -{" "}
                         {formatTimeHMMA(s?.endedAt)}
                       </p>

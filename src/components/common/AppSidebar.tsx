@@ -3,6 +3,7 @@ import {
   ChartNoAxesColumnIcon,
   Home,
   Inbox,
+  LogOutIcon,
   Search,
   Settings,
   Ship,
@@ -14,6 +15,7 @@ import {
 import {
   Sidebar,
   SidebarContent,
+  SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
   SidebarGroupLabel,
@@ -22,6 +24,8 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import { Link } from "@tanstack/react-router";
+import { Button } from "../ui/button";
+import { useLogout } from "@/api/queries";
 
 // Menu items.
 const items = [
@@ -37,22 +41,19 @@ const items = [
   },
   {
     title: "Overview",
-    url: "#",
+    url: "/overview",
     icon: ChartNoAxesColumnIcon,
   },
   {
-    title: "Search",
-    url: "#",
-    icon: Search,
-  },
-  {
     title: "Settings",
-    url: "#",
+    url: "/settings",
     icon: Settings,
   },
 ];
 
 export function AppSidebar() {
+  const { mutate: logout } = useLogout();
+
   return (
     <Sidebar>
       <SidebarContent>
@@ -74,6 +75,12 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
+      <SidebarFooter>
+        <Button onClick={() => logout()} variant="outline">
+          <LogOutIcon />
+          Logout
+        </Button>
+      </SidebarFooter>
     </Sidebar>
   );
 }

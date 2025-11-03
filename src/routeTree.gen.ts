@@ -10,9 +10,9 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as LoginRouteImport } from './routes/login'
-import { Route as AboutRouteImport } from './routes/about'
 import { Route as PathlessLayoutRouteImport } from './routes/_pathlessLayout'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as PathlessLayoutSettingsRouteImport } from './routes/_pathlessLayout/settings'
 import { Route as PathlessLayoutReviewRouteImport } from './routes/_pathlessLayout/review'
 import { Route as PathlessLayoutOverviewRouteImport } from './routes/_pathlessLayout/overview'
 import { Route as PathlessLayoutFocusRouteImport } from './routes/_pathlessLayout/focus'
@@ -20,11 +20,6 @@ import { Route as PathlessLayoutFocusRouteImport } from './routes/_pathlessLayou
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AboutRoute = AboutRouteImport.update({
-  id: '/about',
-  path: '/about',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PathlessLayoutRoute = PathlessLayoutRouteImport.update({
@@ -35,6 +30,11 @@ const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
+} as any)
+const PathlessLayoutSettingsRoute = PathlessLayoutSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => PathlessLayoutRoute,
 } as any)
 const PathlessLayoutReviewRoute = PathlessLayoutReviewRouteImport.update({
   id: '/review',
@@ -54,50 +54,49 @@ const PathlessLayoutFocusRoute = PathlessLayoutFocusRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/about': typeof AboutRoute
   '/login': typeof LoginRoute
   '/focus': typeof PathlessLayoutFocusRoute
   '/overview': typeof PathlessLayoutOverviewRoute
   '/review': typeof PathlessLayoutReviewRoute
+  '/settings': typeof PathlessLayoutSettingsRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/about': typeof AboutRoute
   '/login': typeof LoginRoute
   '/focus': typeof PathlessLayoutFocusRoute
   '/overview': typeof PathlessLayoutOverviewRoute
   '/review': typeof PathlessLayoutReviewRoute
+  '/settings': typeof PathlessLayoutSettingsRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_pathlessLayout': typeof PathlessLayoutRouteWithChildren
-  '/about': typeof AboutRoute
   '/login': typeof LoginRoute
   '/_pathlessLayout/focus': typeof PathlessLayoutFocusRoute
   '/_pathlessLayout/overview': typeof PathlessLayoutOverviewRoute
   '/_pathlessLayout/review': typeof PathlessLayoutReviewRoute
+  '/_pathlessLayout/settings': typeof PathlessLayoutSettingsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/about' | '/login' | '/focus' | '/overview' | '/review'
+  fullPaths: '/' | '/login' | '/focus' | '/overview' | '/review' | '/settings'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/about' | '/login' | '/focus' | '/overview' | '/review'
+  to: '/' | '/login' | '/focus' | '/overview' | '/review' | '/settings'
   id:
     | '__root__'
     | '/'
     | '/_pathlessLayout'
-    | '/about'
     | '/login'
     | '/_pathlessLayout/focus'
     | '/_pathlessLayout/overview'
     | '/_pathlessLayout/review'
+    | '/_pathlessLayout/settings'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   PathlessLayoutRoute: typeof PathlessLayoutRouteWithChildren
-  AboutRoute: typeof AboutRoute
   LoginRoute: typeof LoginRoute
 }
 
@@ -108,13 +107,6 @@ declare module '@tanstack/react-router' {
       path: '/login'
       fullPath: '/login'
       preLoaderRoute: typeof LoginRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/about': {
-      id: '/about'
-      path: '/about'
-      fullPath: '/about'
-      preLoaderRoute: typeof AboutRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_pathlessLayout': {
@@ -130,6 +122,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/_pathlessLayout/settings': {
+      id: '/_pathlessLayout/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof PathlessLayoutSettingsRouteImport
+      parentRoute: typeof PathlessLayoutRoute
     }
     '/_pathlessLayout/review': {
       id: '/_pathlessLayout/review'
@@ -159,12 +158,14 @@ interface PathlessLayoutRouteChildren {
   PathlessLayoutFocusRoute: typeof PathlessLayoutFocusRoute
   PathlessLayoutOverviewRoute: typeof PathlessLayoutOverviewRoute
   PathlessLayoutReviewRoute: typeof PathlessLayoutReviewRoute
+  PathlessLayoutSettingsRoute: typeof PathlessLayoutSettingsRoute
 }
 
 const PathlessLayoutRouteChildren: PathlessLayoutRouteChildren = {
   PathlessLayoutFocusRoute: PathlessLayoutFocusRoute,
   PathlessLayoutOverviewRoute: PathlessLayoutOverviewRoute,
   PathlessLayoutReviewRoute: PathlessLayoutReviewRoute,
+  PathlessLayoutSettingsRoute: PathlessLayoutSettingsRoute,
 }
 
 const PathlessLayoutRouteWithChildren = PathlessLayoutRoute._addFileChildren(
@@ -174,7 +175,6 @@ const PathlessLayoutRouteWithChildren = PathlessLayoutRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   PathlessLayoutRoute: PathlessLayoutRouteWithChildren,
-  AboutRoute: AboutRoute,
   LoginRoute: LoginRoute,
 }
 export const routeTree = rootRouteImport
