@@ -9,7 +9,8 @@ declare module "axios" {
 }
 
 const axiosClient = axios.create({
-  baseURL: "http://localhost:4000/api",
+  // baseURL: "http://localhost:4000/api",
+  baseURL: "https://tide-focus.onrender.com/api",
   timeout: 10000,
   headers: {
     "Content-Type": "application/json",
