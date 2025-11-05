@@ -22,6 +22,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  useSidebar,
 } from "@/components/ui/sidebar";
 import { Link } from "@tanstack/react-router";
 import { Button } from "../ui/button";
@@ -53,6 +54,11 @@ const items = [
 
 export function AppSidebar() {
   const { mutate: logout } = useLogout();
+  const { setOpenMobile } = useSidebar();
+
+  const handleClick = () => {
+    setOpenMobile(false);
+  };
 
   return (
     <Sidebar variant="floating">
@@ -64,7 +70,7 @@ export function AppSidebar() {
               {items.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild>
-                    <Link to={item.url}>
+                    <Link to={item.url} onClick={handleClick}>
                       <item.icon />
                       <span>{item.title}</span>
                     </Link>
