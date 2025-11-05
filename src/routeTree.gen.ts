@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as RegisterRouteImport } from './routes/register'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as PathlessLayoutRouteImport } from './routes/_pathlessLayout'
 import { Route as IndexRouteImport } from './routes/index'
@@ -17,6 +18,11 @@ import { Route as PathlessLayoutReviewRouteImport } from './routes/_pathlessLayo
 import { Route as PathlessLayoutOverviewRouteImport } from './routes/_pathlessLayout/overview'
 import { Route as PathlessLayoutFocusRouteImport } from './routes/_pathlessLayout/focus'
 
+const RegisterRoute = RegisterRouteImport.update({
+  id: '/register',
+  path: '/register',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
@@ -55,6 +61,7 @@ const PathlessLayoutFocusRoute = PathlessLayoutFocusRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
+  '/register': typeof RegisterRoute
   '/focus': typeof PathlessLayoutFocusRoute
   '/overview': typeof PathlessLayoutOverviewRoute
   '/review': typeof PathlessLayoutReviewRoute
@@ -63,6 +70,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
+  '/register': typeof RegisterRoute
   '/focus': typeof PathlessLayoutFocusRoute
   '/overview': typeof PathlessLayoutOverviewRoute
   '/review': typeof PathlessLayoutReviewRoute
@@ -73,6 +81,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_pathlessLayout': typeof PathlessLayoutRouteWithChildren
   '/login': typeof LoginRoute
+  '/register': typeof RegisterRoute
   '/_pathlessLayout/focus': typeof PathlessLayoutFocusRoute
   '/_pathlessLayout/overview': typeof PathlessLayoutOverviewRoute
   '/_pathlessLayout/review': typeof PathlessLayoutReviewRoute
@@ -80,14 +89,29 @@ export interface FileRoutesById {
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/login' | '/focus' | '/overview' | '/review' | '/settings'
+  fullPaths:
+    | '/'
+    | '/login'
+    | '/register'
+    | '/focus'
+    | '/overview'
+    | '/review'
+    | '/settings'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/login' | '/focus' | '/overview' | '/review' | '/settings'
+  to:
+    | '/'
+    | '/login'
+    | '/register'
+    | '/focus'
+    | '/overview'
+    | '/review'
+    | '/settings'
   id:
     | '__root__'
     | '/'
     | '/_pathlessLayout'
     | '/login'
+    | '/register'
     | '/_pathlessLayout/focus'
     | '/_pathlessLayout/overview'
     | '/_pathlessLayout/review'
@@ -98,10 +122,18 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   PathlessLayoutRoute: typeof PathlessLayoutRouteWithChildren
   LoginRoute: typeof LoginRoute
+  RegisterRoute: typeof RegisterRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/register': {
+      id: '/register'
+      path: '/register'
+      fullPath: '/register'
+      preLoaderRoute: typeof RegisterRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/login': {
       id: '/login'
       path: '/login'
@@ -176,6 +208,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   PathlessLayoutRoute: PathlessLayoutRouteWithChildren,
   LoginRoute: LoginRoute,
+  RegisterRoute: RegisterRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

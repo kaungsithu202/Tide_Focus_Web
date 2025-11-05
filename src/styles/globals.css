@@ -1,6 +1,7 @@
+@import url("https://fonts.googleapis.com/css2?family=Original+Surfer&display=swap");
+
 @import "tailwindcss";
 @import "tw-animate-css";
-@import url("https://fonts.googleapis.com/css2?family=Original+Surfer&display=swap");
 
 @custom-variant dark (&:is(.dark *));
 
@@ -99,18 +100,17 @@
   font-display: swap;
   src: url("/public/fonts/Toucon__.ttf") format("truetype");
 }
-
 @font-face {
-  font-family: "Ocean";
+  font-family: "BlueOcean";
   font-style: normal;
   font-weight: 700;
   font-display: swap;
-  src: url("/public/fonts/ocean.ttf") format("truetype");
+  src: url("/public/fonts/BlueOcean-WAvn.ttf") format("truetype");
 }
 
 @theme inline {
   --font-toucon: "Toucon", sans-serif;
-  --font-ocean: "ocean", sans-serif;
+  --font-blue-ocean: "BlueOcean", sans-serif;
   --font-original-surfer: "Original Surfer", sans-serif;
   --color-background: var(--background);
   --color-foreground: var(--foreground);

@@ -1,23 +1,14 @@
 import IfElse from "@/components/common/IfElse";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import {
   Drawer,
-  DrawerClose,
   DrawerContent,
   DrawerDescription,
-  DrawerFooter,
   DrawerHeader,
   DrawerTitle,
   DrawerTrigger,
 } from "@/components/ui/drawer";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 import {
   Select,
@@ -27,20 +18,23 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import Wave from "@/features/focus/components/Wave";
-import WaveForm from "@/features/focus/components/WaveForm";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import {
   useCreateSession,
   useGetAllCategories,
   useGetAllSessions,
   useSessionAction,
 } from "@/features/focus/queries";
-import { createFileRoute } from "@tanstack/react-router";
+import { TimerType, type CreateSessionResponse } from "@/features/focus/types";
+import { createFileRoute, useBlocker } from "@tanstack/react-router";
 import {
   Anchor,
   CircleAlertIcon,
   CircleCheckBig,
-  FileWarningIcon,
   HourglassIcon,
   Sailboat,
   Settings,
@@ -48,22 +42,15 @@ import {
   Ship,
   ShipWheel,
   Waves,
-  WavesIcon,
 } from "lucide-react";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 import { useEffect, useRef, useState } from "react";
-import { TimerType, type CreateSessionResponse } from "@/features/focus/types";
-import useUnsavedChangesWarning from "@/hooks/useUnsavedWarn";
-import { toast } from "sonner";
-import { Field, FieldDescription, FieldLabel } from "@/components/ui/field";
-import { Input } from "@/components/ui/input";
+
 import If from "@/components/common/If";
-import { getFocusTime } from "@/lib/datetime";
+import { Field, FieldLabel } from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
 import CategoryDialog from "@/features/focus/components/CategoryDialog";
+import { getFocusTime } from "@/lib/datetime";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/_pathlessLayout/focus")({
   component: RouteComponent,
@@ -81,7 +68,16 @@ function RouteComponent() {
 
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
-  useUnsavedChangesWarning(isRunning);
+  // useBlocker({
+  //   shouldBlockFn: () => {
+  //     if (!isRunning) return false; // ✅ allow navigation
+  //     const shouldLeave = window.confirm(
+  //       "Timer is still running. Are you sure you want to leave?"
+  //     );
+  //     return !shouldLeave; // ✅ block = true → cancel navigation
+  //   },
+  // });
+
   const startDate = new Date();
   startDate.setHours(0, 0, 0, 0);
 

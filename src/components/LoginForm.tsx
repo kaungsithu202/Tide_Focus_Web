@@ -6,6 +6,7 @@ import {
   Card,
   CardContent,
   CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -76,10 +77,10 @@ export function LoginForm() {
   return (
     <Card className="w-full max-w-md border-0 shadow-none lg:border lg:shadow-sm">
       <CardHeader className="space-y-1">
-        <CardTitle className="text-3xl font-bold tracking-tight text-balance">
-          Welcome back
+        <CardTitle className="text-4xl font-bold font-original-surfer tracking-tight">
+          WELCOME BACK
         </CardTitle>
-        <CardDescription className="text-base text-pretty">
+        <CardDescription className="text-base text-pretty font-original-surfer">
           Enter your credentials to access your account
         </CardDescription>
       </CardHeader>
@@ -125,8 +126,8 @@ export function LoginForm() {
           </Button>
         </form>
       </CardContent>
-      {/* <CardFooter className="flex flex-col space-y-4">
-        <div className="relative w-full">
+      <CardFooter className="flex flex-col space-y-4">
+        {/* <div className="relative w-full">
           <div className="absolute inset-0 flex items-center">
             <span className="w-full border-t" />
           </div>
@@ -176,17 +177,17 @@ export function LoginForm() {
             </svg>
             GitHub
           </Button>
-        </div>
+        </div> */}
         <p className="text-center text-sm text-muted-foreground">
           Don't have an account?{" "}
           <Link
-            href="/signup"
+            to="/register"
             className="text-primary hover:underline font-medium"
           >
             Sign up
           </Link>
         </p>
-      </CardFooter> */}
+      </CardFooter>
     </Card>
   );
 }
