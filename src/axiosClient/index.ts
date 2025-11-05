@@ -61,14 +61,13 @@ axiosClient.interceptors.response.use(
         // Cookies.remove("token");
 
         try {
-          const newRefreshTokenResponse = await axiosClient.post(
-            REFRESH_TOKEN,
-            {},
-            { withCredentials: true }
-          );
+          const res = await axiosClient.post<{
+            accessToken: string;
+            refreshToken: string;
+          }>(REFRESH_TOKEN);
 
-          if (newRefreshTokenResponse?.data?.Data) {
-            const newToken = (newRefreshTokenResponse.data as any).accessToken;
+          if (res.status === 200) {
+            const newToken = res.data.accessToken;
 
             // Update cookies
             authSetter(newToken);
