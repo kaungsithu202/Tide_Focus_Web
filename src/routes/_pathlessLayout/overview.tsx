@@ -53,7 +53,7 @@ function RouteComponent() {
   ).size;
 
   return (
-    <div className="container-md my-5 grid grid-cols-[40%_60%] gap-5">
+    <div className="container md:container-md my-5 grid grid-cols-1 md:grid-cols-[40%_60%] gap-5">
       <Card>
         <CardHeader>
           <CardTitle className="font-bold">Today Focus</CardTitle>
@@ -129,13 +129,13 @@ function RouteComponent() {
           </Card>
         </CardContent>
       </Card>
-      <Card className="col-span-2">
+      <Card className="md:col-span-2">
         <CardHeader>
           <CardTitle className="font-bold">Lifetime Focus</CardTitle>
           <CardDescription className="text-xs">{formattedDate}</CardDescription>
         </CardHeader>
-        <CardContent className="flex items-center gap-2">
-          <Card className="w-1/2 py-4 !gap-1 bg-sky-50 ">
+        <CardContent className="flex flex-col md:flex-row items-center gap-2 px-3 md:px-6">
+          <Card className="w-full md:w-1/2 !gap-1 py-4 bg-sky-50">
             <CardHeader>
               <CardTitle className="flex flex-col items-center justify-center text-xs gap-2 text-sky-800">
                 <IconBg className="bg-sky-100">
@@ -148,7 +148,7 @@ function RouteComponent() {
               {getFocusTime(getTotalElapsedSeconds(sessionsByUser ?? []))}
             </CardContent>
           </Card>
-          <Card className="w-1/2 !gap-1 py-4 bg-violet-50">
+          <Card className="w-full md:w-1/2 !gap-1 py-4 bg-violet-50">
             <CardHeader>
               <CardTitle className="flex flex-col items-center justify-center gap-2 text-xs text-sky-800">
                 <IconBg className="bg-violet-100">
@@ -161,7 +161,7 @@ function RouteComponent() {
               {sessionsByUser?.length}
             </CardContent>
           </Card>
-          <Card className="w-1/2 py-4 !gap-1 bg-indigo-50">
+          <Card className="w-full md:w-1/2 !gap-1 py-4 bg-indigo-50">
             <CardHeader>
               <CardTitle className="flex flex-col items-center justify-center gap-2 text-xs text-sky-800">
                 <IconBg className="bg-indigo-100">

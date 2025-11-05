@@ -23,9 +23,9 @@ function RouteComponent() {
             width={40}
             height={40}
             alt="Tide Focus logo — blue ocean wave icon"
-            className="size-10"
+            className="size-5 md:size-10"
           />
-          <h1 className="font-extrabold text-2xl text-ocean-800 font-original-surfer">
+          <h1 className="font-extrabold text-lg md:text-2xl text-ocean-800 font-original-surfer">
             Tide Focus
           </h1>
         </nav>
@@ -35,7 +35,9 @@ function RouteComponent() {
           variant="default"
           aria-label="Get started with Tide Focus"
         >
-          <Link to="/login">Get Started</Link>
+          <Link to="/login" className="text-xs md:text-sm">
+            Get Started
+          </Link>
         </Button>
       </header>
 
@@ -46,10 +48,10 @@ function RouteComponent() {
         role="main"
       >
         <section className="mt-20 max-w-2xl">
-          <h2 className="text-5xl font-bold font-toucon text-ocean-800">
+          <h2 className="text-3xl md:text-5xl font-bold font-toucon text-ocean-800">
             Find your flow. Focus with calm.
           </h2>
-          <p className="text-gray-500 mt-5">
+          <p className="text-gray-500 mt-5 text-sm md:text-base">
             Tide Focus blends mindfulness and productivity to help you stay in
             rhythm — focus deeply, rest intentionally, and make every moment
             meaningful.
@@ -59,14 +61,14 @@ function RouteComponent() {
             <Button variant="default" asChild>
               <Link
                 to="/login"
-                className="flex items-center gap-1"
+                className="flex items-center gap-1 text-xs md:text-sm"
                 aria-label="Try Tide Focus now"
               >
                 Try It Now <ArrowRight aria-hidden="true" />
               </Link>
             </Button>
 
-            <p className="text-gray-500 text-sm">
+            <p className="text-gray-500 text-xs md:text-sm">
               Free forever • Start focusing in seconds
             </p>
           </div>

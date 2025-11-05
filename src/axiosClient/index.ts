@@ -107,7 +107,8 @@ axiosClient.interceptors.response.use(
             delete axiosClient.defaults.headers.common["Authorization"];
             window.location.href = "/";
 
-            throw new Error(newRefreshTokenResponse?.data?.RespDescription);
+            // throw new Error(newRefreshTokenResponse?.data?.RespDescription);
+            throw new Error("Refresh Failed");
           }
         } catch (err) {
           // Refresh failed - reject all queued requests

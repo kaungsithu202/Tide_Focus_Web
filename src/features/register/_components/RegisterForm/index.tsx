@@ -59,10 +59,10 @@ function RegisterForm() {
   return (
     <div className="w-full max-w-lg space-y-8">
       <div className="space-y-2 text-center">
-        <h1 className="text-4xl font-original-surfer font-semibold tracking-tight">
+        <h1 className="text-2xl md:text-4xl font-original-surfer font-semibold tracking-tight">
           CREATE YOUR ACCOUNT
         </h1>
-        <p className="text-muted-foreground text-pretty font-original-surfer">
+        <p className="text-muted-foreground text-pretty text-sm md:text-base font-original-surfer">
           Enter your information to get started
         </p>
       </div>
@@ -147,7 +147,11 @@ function RegisterForm() {
             </div>
           </div>
 
-          <Button type="submit" className="w-full" disabled={isPending}>
+          <Button
+            type="submit"
+            className="w-full h-9 md:h-11 text-sm md:text-base"
+            disabled={isPending}
+          >
             {isPending ? "Creating account..." : "Create account"}
           </Button>
 

@@ -55,7 +55,7 @@ export function AppSidebar() {
   const { mutate: logout } = useLogout();
 
   return (
-    <Sidebar>
+    <Sidebar variant="floating">
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupLabel>Tide Focus</SidebarGroupLabel>
