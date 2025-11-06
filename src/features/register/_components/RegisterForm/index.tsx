@@ -13,6 +13,7 @@ import { Link, useNavigate } from "@tanstack/react-router";
 import { useForm } from "react-hook-form";
 import z from "zod";
 import { useRegister } from "../../_api/_queries";
+import { useAuth } from "@/store";
 
 const registerSchema = z
   .object({
@@ -34,6 +35,7 @@ type FormValues = z.infer<typeof registerSchema>;
 function RegisterForm() {
   const { mutate: register, isPending } = useRegister();
   const navigate = useNavigate();
+  const setAccessToken = useAuth((state) => state.setAccessToken);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(registerSchema),
@@ -47,7 +49,8 @@ function RegisterForm() {
 
   async function onSubmit(values: FormValues) {
     register(values, {
-      onSuccess: () => {
+      onSuccess: (res: any) => {
+        setAccessToken(res.accessToken);
         navigate({
           href: "/focus",
           replace: true,
