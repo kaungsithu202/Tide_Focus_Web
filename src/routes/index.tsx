@@ -97,9 +97,9 @@ function RouteComponent() {
       </header>
 
       <main className="relative z-10">
-        <section className="container pt-16 pb-24 lg:pt-28 lg:pb-32">
+        <section className="container pt-10 pb-16 sm:pt-16 sm:pb-24 lg:pt-28 lg:pb-32">
           <div className="max-w-2xl">
-            <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-ocean-300/50 bg-ocean-100/20 px-3 py-1 text-xs font-medium tracking-wide text-ocean-700">
+            <div className="mb-5 sm:mb-6 inline-flex items-center gap-2 rounded-full border border-ocean-300/50 bg-ocean-100/20 px-3 py-1 text-xs font-medium tracking-wide text-ocean-700">
               <Waves size={13} aria-hidden="true" />
               Focus sessions for deep workers
             </div>
@@ -110,34 +110,34 @@ function RouteComponent() {
               one tide at a time.
             </h1>
 
-            <p className="mt-6 max-w-lg text-base leading-7 text-muted-foreground md:text-lg md:leading-8">
+            <p className="mt-4 max-w-lg text-[15px] leading-7 text-muted-foreground sm:mt-6 sm:text-base md:text-lg md:leading-8">
               Tide Focus gives you intentional focus sessions, restorative breaks,
               and lightweight reflection — so you stay consistent without burning out.
             </p>
 
-            <div className="mt-8 flex items-center gap-3">
-              <Button size="lg" variant="ocean" asChild>
-                <Link to="/register" className="gap-2">
+            <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-3">
+              <Button size="lg" variant="ocean" asChild className="w-full sm:w-auto">
+                <Link to="/register" className="gap-2 justify-center">
                   Get started free
                   <ArrowRight size={16} aria-hidden="true" />
                 </Link>
               </Button>
-              <Button size="lg" variant="ghost" asChild>
-                <Link to="/login">Sign in</Link>
+              <Button size="lg" variant="ghost" asChild className="w-full sm:w-auto">
+                <Link to="/login" className="justify-center">Sign in</Link>
               </Button>
             </div>
           </div>
         </section>
 
-        <section className="container pb-24 lg:pb-32">
-          <div className="mx-auto max-w-3xl rounded-2xl border border-border bg-card/80 backdrop-blur-sm p-8 lg:p-10 shadow-sm">
+        <section className="container pb-16 sm:pb-24 lg:pb-32">
+          <div className="mx-auto max-w-3xl rounded-2xl border border-border bg-card/80 backdrop-blur-sm p-5 sm:p-8 lg:p-10 shadow-sm">
             <div className="flex items-center gap-3 mb-1">
               <Timer size={18} className="text-ocean-500" aria-hidden="true" />
               <h2 className="font-original-surfer text-2xl text-ocean-800 md:text-3xl">
                 Today's flow
               </h2>
             </div>
-            <p className="text-sm text-muted-foreground mb-8">
+            <p className="text-sm text-muted-foreground mb-6 sm:mb-8">
               A snapshot of what a focused day looks like.
             </p>
 
@@ -145,7 +145,7 @@ function RouteComponent() {
               {sessions.map((session) => (
                 <div
                   key={session.title}
-                  className={`flex items-center gap-4 py-5 first:pt-0 last:pb-0 ${
+                  className={`flex items-center gap-3 sm:gap-4 py-4 sm:py-5 first:pt-0 last:pb-0 ${
                     session.status === "upcoming" ? "opacity-50" : ""
                   }`}
                 >
@@ -163,11 +163,11 @@ function RouteComponent() {
 
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
-                      <p className="text-sm font-medium text-foreground">
+                      <p className="text-sm font-medium text-foreground truncate">
                         {session.title}
                       </p>
                       {session.status === "active" && (
-                        <span className="inline-flex items-center gap-1 rounded-full bg-ocean-500/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-ocean-500">
+                        <span className="hidden sm:inline-flex items-center gap-1 rounded-full bg-ocean-500/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-ocean-500 shrink-0">
                           <span className="relative flex size-1.5">
                             <span className="absolute inline-flex size-full animate-ping rounded-full bg-ocean-500 opacity-75" />
                             <span className="relative inline-flex size-1.5 rounded-full bg-ocean-500" />
@@ -176,7 +176,7 @@ function RouteComponent() {
                         </span>
                       )}
                     </div>
-                    <p className="mt-0.5 text-xs text-muted-foreground">
+                    <p className="mt-0.5 text-xs text-muted-foreground truncate">
                       {session.duration}
                     </p>
                   </div>
@@ -187,7 +187,7 @@ function RouteComponent() {
                         <span className="text-xs font-medium tabular-nums text-ocean-500">
                           {session.elapsed}m / {session.total}m
                         </span>
-                        <div className="h-1 w-16 rounded-full bg-ocean-100">
+                        <div className="h-1 w-14 sm:w-16 rounded-full bg-ocean-100">
                           <div
                             className="h-full rounded-full bg-ocean-500 transition-all"
                             style={{ width: `${(session.elapsed / session.total) * 100}%` }}
@@ -206,18 +206,18 @@ function RouteComponent() {
           </div>
         </section>
 
-        <section className="container pb-20 lg:pb-28">
+        <section className="container pb-16 sm:pb-20 lg:pb-28">
           <div className="mx-auto max-w-xl text-center">
             <h2 className="font-original-surfer text-2xl text-ocean-900 md:text-3xl">
               Less noise. More depth.
             </h2>
-            <p className="mt-3 text-sm text-muted-foreground">
+            <p className="mt-3 text-sm text-muted-foreground leading-relaxed">
               Free to use. No credit card, no setup friction.
               Just open it and start your first session.
             </p>
             <div className="mt-6">
-              <Button size="lg" variant="ocean" asChild>
-                <Link to="/register" className="gap-2">
+              <Button size="lg" variant="ocean" asChild className="w-full sm:w-auto">
+                <Link to="/register" className="gap-2 justify-center">
                   Create free account
                   <ArrowRight size={16} aria-hidden="true" />
                 </Link>
@@ -228,12 +228,12 @@ function RouteComponent() {
       </main>
 
       <footer className="relative z-10 border-t border-border">
-        <div className="container py-6 flex items-center justify-between text-xs text-muted-foreground">
+        <div className="container py-6 flex flex-col-reverse items-center justify-between gap-3 sm:flex-row sm:gap-0 text-xs text-muted-foreground">
           <span>&copy; 2025 Tide Focus</span>
-          <div className="flex items-center gap-4">
-            <span>Privacy</span>
-            <span>Terms</span>
-            <span>Contact</span>
+          <div className="flex items-center gap-5">
+            <span className="cursor-default">Privacy</span>
+            <span className="cursor-default">Terms</span>
+            <span className="cursor-default">Contact</span>
           </div>
         </div>
       </footer>

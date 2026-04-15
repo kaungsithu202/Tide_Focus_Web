@@ -14,7 +14,7 @@ function RouteComponent() {
   const { redirect } = Route.useSearch();
 
   return (
-    <div className="min-h-screen flex">
+    <div className="min-h-screen flex flex-col lg:flex-row">
       <div className="relative hidden lg:flex lg:w-1/2 items-center justify-center overflow-hidden bg-gradient-to-br from-ocean-900 via-ocean-700 to-ocean-500">
         <div className="absolute inset-0 opacity-10">
           <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-ocean-100 rounded-full blur-3xl" />
@@ -73,7 +73,11 @@ function RouteComponent() {
         </div>
       </div>
 
-      <div className="flex-1 flex items-center justify-center p-8 bg-background">
+      <div className="flex-1 flex flex-col items-center justify-center px-5 py-8 sm:px-8 bg-background">
+        <div className="mb-8 flex items-center gap-2.5 lg:hidden">
+          <img src="/images/logo-rm.png" width={32} height={32} alt="Tide Focus logo" className="size-8" />
+          <span className="font-original-surfer text-xl text-ocean-800">Tide Focus</span>
+        </div>
         <RegisterForm redirectTo={redirect} />
       </div>
     </div>

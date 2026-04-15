@@ -14,7 +14,7 @@ function LoginPage() {
   const { redirect } = Route.useSearch();
 
   return (
-    <div className="min-h-screen flex">
+    <div className="min-h-screen flex flex-col lg:flex-row">
       <div className="relative hidden lg:flex lg:w-1/2 items-center justify-center overflow-hidden bg-gradient-to-br from-ocean-900 via-ocean-700 to-ocean-500">
         <div className="absolute inset-0 opacity-10">
           <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-ocean-100 rounded-full blur-3xl" />
@@ -23,38 +23,14 @@ function LoginPage() {
         </div>
 
         <div className="absolute bottom-0 left-0 right-0 h-40">
-          <svg
-            viewBox="0 0 1800 320"
-            className="absolute bottom-0 w-full h-full opacity-[0.08]"
-            preserveAspectRatio="none"
-          >
-            <path
-              d="M0 200 C200 180 400 220 600 200 C800 180 1000 160 1200 190 C1400 210 1600 180 1800 200 L1800 320 L0 320 Z"
-              fill="white"
-              style={{ animation: "wave-drift-1 8s ease-in-out infinite" }}
-            />
+          <svg viewBox="0 0 1800 320" className="absolute bottom-0 w-full h-full opacity-[0.08]" preserveAspectRatio="none">
+            <path d="M0 200 C200 180 400 220 600 200 C800 180 1000 160 1200 190 C1400 210 1600 180 1800 200 L1800 320 L0 320 Z" fill="white" style={{ animation: "wave-drift-1 8s ease-in-out infinite" }} />
           </svg>
-          <svg
-            viewBox="0 0 1800 320"
-            className="absolute bottom-0 w-full h-full opacity-[0.06]"
-            preserveAspectRatio="none"
-          >
-            <path
-              d="M0 210 C300 190 500 240 700 210 C900 185 1100 220 1300 195 C1500 215 1700 190 1800 205 L1800 320 L0 320 Z"
-              fill="white"
-              style={{ animation: "wave-drift-2 10s ease-in-out infinite" }}
-            />
+          <svg viewBox="0 0 1800 320" className="absolute bottom-0 w-full h-full opacity-[0.06]" preserveAspectRatio="none">
+            <path d="M0 210 C300 190 500 240 700 210 C900 185 1100 220 1300 195 C1500 215 1700 190 1800 205 L1800 320 L0 320 Z" fill="white" style={{ animation: "wave-drift-2 10s ease-in-out infinite" }} />
           </svg>
-          <svg
-            viewBox="0 0 1800 320"
-            className="absolute bottom-0 w-full h-full opacity-[0.04]"
-            preserveAspectRatio="none"
-          >
-            <path
-              d="M0 225 C250 210 450 240 650 220 C850 200 1050 230 1250 215 C1450 225 1650 205 1800 220 L1800 320 L0 320 Z"
-              fill="white"
-              style={{ animation: "wave-drift-3 12s ease-in-out infinite" }}
-            />
+          <svg viewBox="0 0 1800 320" className="absolute bottom-0 w-full h-full opacity-[0.04]" preserveAspectRatio="none">
+            <path d="M0 225 C250 210 450 240 650 220 C850 200 1050 230 1250 215 C1450 225 1650 205 1800 220 L1800 320 L0 320 Z" fill="white" style={{ animation: "wave-drift-3 12s ease-in-out infinite" }} />
           </svg>
         </div>
 
@@ -73,7 +49,11 @@ function LoginPage() {
         </div>
       </div>
 
-      <div className="flex-1 flex items-center justify-center p-8 bg-background">
+      <div className="flex-1 flex flex-col items-center justify-center px-5 py-8 sm:px-8 bg-background">
+        <div className="mb-8 flex items-center gap-2.5 lg:hidden">
+          <img src="/images/logo-rm.png" width={32} height={32} alt="Tide Focus logo" className="size-8" />
+          <span className="font-original-surfer text-xl text-ocean-800">Tide Focus</span>
+        </div>
         <LoginForm redirectTo={redirect} />
       </div>
     </div>

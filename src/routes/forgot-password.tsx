@@ -54,7 +54,7 @@ function RouteComponent() {
   };
 
   return (
-    <div className="min-h-screen flex">
+    <div className="min-h-screen flex flex-col lg:flex-row">
       <div className="relative hidden lg:flex lg:w-1/2 items-center justify-center overflow-hidden bg-gradient-to-br from-ocean-900 via-ocean-700 to-ocean-500">
         <div className="absolute inset-0 opacity-10">
           <div className="absolute top-1/4 left-1/4 h-64 w-64 rounded-full bg-ocean-100 blur-3xl" />
@@ -117,7 +117,11 @@ function RouteComponent() {
         </div>
       </div>
 
-      <div className="flex flex-1 items-center justify-center bg-background p-8">
+      <div className="flex flex-1 flex-col items-center justify-center bg-background px-5 py-8 sm:px-8">
+        <div className="mb-8 flex items-center gap-2.5 lg:hidden">
+          <img src="/images/logo-rm.png" width={32} height={32} alt="Tide Focus logo" className="size-8" />
+          <span className="font-original-surfer text-xl text-ocean-800">Tide Focus</span>
+        </div>
         <div className="w-full max-w-md space-y-8">
           {submitted ? (
             <div className="space-y-8 text-center" aria-live="polite">

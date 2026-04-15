@@ -15,18 +15,34 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+import type { CSSProperties } from "react";
+
+const REVEAL_CLASS =
+  "motion-safe:animate-[overview-card-in_480ms_cubic-bezier(0.22,1,0.36,1)_both] motion-safe:opacity-0";
+
+const getDelay = (ms: number): CSSProperties => ({ animationDelay: `${ms}ms` });
 
 function StatBlock({
   icon: Icon,
   label,
   value,
+  revealDelay,
 }: {
   icon: React.ElementType;
   label: string;
   value: string | number;
+  revealDelay?: number;
 }) {
   return (
-    <div className="flex items-center gap-3 rounded-xl bg-muted/40 px-4 py-4">
+    <div
+      style={revealDelay !== undefined ? getDelay(revealDelay) : undefined}
+      className={cn(
+        REVEAL_CLASS,
+        "flex items-center gap-3 rounded-xl bg-muted/40 px-4 py-4",
+        "transition-[transform,box-shadow,border-color] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] motion-safe:hover:-translate-y-0.5 motion-safe:hover:shadow-sm motion-safe:hover:border-ocean-200/60 motion-reduce:transition-none border border-transparent"
+      )}
+    >
       <div className="flex shrink-0 size-10 items-center justify-center rounded-lg bg-ocean-700/8 text-ocean-700">
         <Icon size={18} />
       </div>
@@ -73,7 +89,7 @@ function RouteComponent() {
 
   if (isError) {
     return (
-      <div className="container md:container-md py-12 flex flex-col items-center gap-4 text-center">
+      <div className="container py-10 text-center md:container-md md:py-12 flex flex-col items-center gap-4">
         <div className="flex size-12 items-center justify-center rounded-full bg-destructive/10">
           <AlertTriangle size={24} className="text-destructive" />
         </div>
@@ -88,55 +104,70 @@ function RouteComponent() {
   }
 
   return (
-    <div className="container md:container-md py-8 md:py-12">
-      <header className="sticky top-0 z-10 -mx-4 px-4 md:-mx-6 md:px-6 py-6 md:py-8 bg-background/95 backdrop-blur-sm mb-10 border-b border-border/50">
+    <div className="container py-6 md:container-md md:py-12">
+      <header
+        className={cn(
+          REVEAL_CLASS,
+          "sticky top-0 z-10 -mx-4 mb-6 border-b border-border/50 bg-background/95 px-4 py-4 backdrop-blur-sm sm:mb-8 sm:py-6 md:-mx-6 md:mb-10 md:px-6 md:py-8"
+        )}
+      >
         <p className="text-xs font-medium text-ocean-700/80 uppercase tracking-widest mb-2">
           Workspace Overview
         </p>
-        <h1 className="font-original-surfer text-4xl text-ocean-900">
+        <h1 className="font-original-surfer text-3xl leading-tight text-ocean-900 sm:text-4xl">
           {formattedDate}
         </h1>
       </header>
 
       {isLoading ? (
-        <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-12">
-          <div className="space-y-4">
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-[1fr_320px] lg:gap-12">
+          <div className="space-y-3 sm:space-y-4">
             <Skeleton className="h-24 rounded-xl" />
             <Skeleton className="h-24 rounded-xl" />
           </div>
           <Skeleton className="h-96 rounded-xl" />
         </div>
       ) : hasSessions ? (
-        <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-12">
-          <div className="space-y-6">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-[1fr_320px] lg:gap-12">
+          <div className="space-y-4 sm:space-y-6">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4">
               <StatBlock
                 icon={HourglassIcon}
                 label="Total Time"
                 value={getFocusTime(getTotalElapsedSeconds(sessions))}
+                revealDelay={80}
               />
               <StatBlock
                 icon={CheckCircle}
                 label="Sessions"
                 value={sessions.length}
+                revealDelay={140}
               />
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4">
               <StatBlock
                 icon={CalendarIcon}
                 label="Active Days"
                 value={totalFocusedDays}
+                revealDelay={200}
               />
               <StatBlock
                 icon={HourglassIcon}
                 label="This Month"
                 value={getFocusTime(getTotalElapsedSeconds(monthSessions))}
+                revealDelay={260}
               />
             </div>
           </div>
 
-          <div className="relative lg:sticky lg:top-8 lg:self-start">
-            <div className="absolute -inset-6 bg-ocean-100/40 rounded-[2.5rem] blur-3xl -z-10" />
+          <div
+            className={cn(REVEAL_CLASS, "relative lg:sticky lg:top-8 lg:self-start")}
+            style={getDelay(320)}
+          >
+            <div
+              aria-hidden="true"
+              className="absolute -inset-6 rounded-[2.5rem] bg-ocean-100/40 blur-3xl -z-10 motion-safe:animate-[gentle-breathe_5s_ease-in-out_infinite] motion-reduce:hidden"
+            />
             <Calendar
               sessions={monthSessions}
               mode="single"
@@ -148,8 +179,13 @@ function RouteComponent() {
           </div>
         </div>
       ) : (
-        <div className="max-w-md mx-auto mt-8 rounded-2xl border border-dashed border-border p-10 text-center bg-muted/20">
-          <div className="flex size-14 items-center justify-center rounded-full bg-ocean-700/8 text-ocean-700 mx-auto mb-5">
+        <div
+          className={cn(
+            REVEAL_CLASS,
+            "mx-auto mt-6 max-w-md rounded-2xl border border-dashed border-border bg-muted/20 p-8 text-center sm:mt-8 sm:p-10"
+          )}
+        >
+          <div className="flex size-14 items-center justify-center rounded-full bg-ocean-700/8 text-ocean-700 mx-auto mb-5 motion-safe:animate-[gentle-breathe_4s_ease-in-out_infinite] motion-reduce:animate-none">
             <WavesIcon size={28} />
           </div>
           <p className="text-base font-medium text-foreground mb-2">
@@ -158,7 +194,13 @@ function RouteComponent() {
           <p className="text-sm text-muted-foreground mb-8">
             Your deep work journey starts with a single wave.
           </p>
-          <Button asChild className="gap-2 bg-ocean-700 hover:bg-ocean-800">
+          <Button
+            asChild
+            className={cn(
+              "w-full justify-center gap-2 bg-ocean-700 shadow-[0_14px_24px_-14px_rgba(2,54,123,0.5)] hover:bg-ocean-800 sm:w-auto",
+              "transition-[transform,box-shadow,background-color] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] motion-safe:hover:-translate-y-0.5 motion-safe:hover:shadow-[0_18px_28px_-14px_rgba(2,54,123,0.55)] motion-safe:active:scale-[0.98] motion-reduce:transition-none"
+            )}
+          >
             <Link to="/focus">
               Start focusing
               <ArrowRight size={16} />

@@ -61,9 +61,12 @@ function Calendar({
   };
 
   const modifiersClassNames = {
-    short: "bg-ocean-100/40 text-foreground rounded-md",
-    medium: "bg-ocean-300/50 text-foreground rounded-md",
-    long: "bg-ocean-700 text-white rounded-md",
+    short:
+      "bg-ocean-100/40 text-foreground rounded-md shadow-[inset_0_0_0_2px_var(--color-background)]",
+    medium:
+      "bg-ocean-300/50 text-foreground rounded-md shadow-[inset_0_0_0_2px_var(--color-background)]",
+    long:
+      "bg-ocean-700 text-white rounded-md shadow-[inset_0_0_0_2px_var(--color-background)]",
   };
   return (
     <DayPicker

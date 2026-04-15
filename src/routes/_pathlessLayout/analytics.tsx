@@ -113,7 +113,7 @@ function StatCard({
   return (
     <div
       className={cn(
-        "group relative overflow-hidden rounded-xl border border-border bg-background p-5 transition-[transform,box-shadow,border-color,background-color] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] motion-safe:hover:-translate-y-1 motion-safe:hover:border-ocean-200/80 motion-safe:hover:shadow-lg",
+        "group relative overflow-hidden rounded-xl border border-border bg-background p-4 md:p-5 transition-[transform,box-shadow,border-color,background-color] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] motion-safe:hover:-translate-y-1 motion-safe:hover:border-ocean-200/80 motion-safe:hover:shadow-lg",
         highlight && "bg-ocean-700/5",
         !reducedMotion && "opacity-0"
       )}
@@ -133,7 +133,7 @@ function StatCard({
         </div>
       </div>
 
-      <div className="relative text-2xl font-bold text-foreground tabular-nums transition-colors duration-300 motion-safe:group-hover:text-ocean-900">
+      <div className="relative text-[1.35rem] font-bold text-foreground tabular-nums transition-colors duration-300 motion-safe:group-hover:text-ocean-900 sm:text-2xl">
         {value}
       </div>
 
@@ -266,7 +266,7 @@ function RouteComponent() {
 
   if (isErrorSessions) {
     return (
-      <div className="container md:container-md py-12 flex flex-col items-center gap-4 text-center">
+      <div className="container py-10 text-center md:container-md md:py-12 flex flex-col items-center gap-4">
         <div className="flex size-12 items-center justify-center rounded-full bg-destructive/10">
           <AlertTriangle size={24} className="text-destructive" />
         </div>
@@ -281,9 +281,9 @@ function RouteComponent() {
   }
 
   return (
-    <div className="container md:container-md py-8 md:py-12">
+    <div className="container py-6 md:container-md md:py-12">
       <header
-        className={cn("mb-8", !prefersReducedMotion && "opacity-0")}
+        className={cn("mb-6 md:mb-8", !prefersReducedMotion && "opacity-0")}
         style={getRevealStyle(40, prefersReducedMotion)}
         data-analytics-motion
       >
@@ -293,7 +293,7 @@ function RouteComponent() {
             Insights
           </span>
         </div>
-        <h1 className="font-original-surfer text-4xl text-ocean-900">Analytics</h1>
+        <h1 className="font-original-surfer text-3xl text-ocean-900 md:text-4xl">Analytics</h1>
         <p className="text-muted-foreground mt-2">
           Track your focus patterns and productivity trends.
         </p>
@@ -306,7 +306,7 @@ function RouteComponent() {
           ))}
         </div>
       ) : sessions.length === 0 ? (
-        <div className="rounded-2xl border border-dashed border-border p-12 text-center bg-muted/20">
+        <div className="rounded-2xl border border-dashed border-border bg-muted/20 p-8 text-center sm:p-10 md:p-12">
           <div className="flex size-14 items-center justify-center rounded-full bg-ocean-700/8 text-ocean-700 mx-auto mb-4 motion-safe:animate-[gentle-breathe_4s_ease-in-out_infinite]">
             <BarChart3 size={28} />
           </div>
@@ -314,7 +314,7 @@ function RouteComponent() {
           <p className="text-sm text-muted-foreground mb-6">
             Complete some focus sessions to see your analytics.
           </p>
-          <Button asChild className="group bg-ocean-700 hover:bg-ocean-800">
+          <Button asChild className="group w-full bg-ocean-700 hover:bg-ocean-800 sm:w-auto">
             <Link to="/focus">
               Start focusing
               <ArrowRight size={14} className="transition-transform duration-300 motion-safe:group-hover:translate-x-0.5" />
@@ -323,10 +323,10 @@ function RouteComponent() {
         </div>
       ) : (
         <>
-          <section className="mb-10">
+          <section className="mb-8 md:mb-10">
             <h2
               className={cn(
-                "mb-4 flex items-center gap-2 text-sm font-semibold text-foreground",
+                "mb-3 flex items-center gap-2 text-sm font-semibold text-foreground md:mb-4",
                 !prefersReducedMotion && "opacity-0"
               )}
               style={getRevealStyle(120, prefersReducedMotion)}
@@ -336,7 +336,7 @@ function RouteComponent() {
               This Week
             </h2>
 
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
+            <div className="grid grid-cols-1 gap-3 md:grid-cols-2 md:gap-4 lg:grid-cols-4">
               <StatCard
                 label="Focus Time"
                 value={getFocusTime(thisWeekTime)}
@@ -373,10 +373,10 @@ function RouteComponent() {
             </div>
           </section>
 
-          <section className="mb-10">
+          <section className="mb-8 md:mb-10">
             <h2
               className={cn(
-                "mb-4 flex items-center gap-2 text-sm font-semibold text-foreground",
+                "mb-3 flex items-center gap-2 text-sm font-semibold text-foreground md:mb-4",
                 !prefersReducedMotion && "opacity-0"
               )}
               style={getRevealStyle(410, prefersReducedMotion)}
@@ -386,7 +386,7 @@ function RouteComponent() {
               Category Breakdown
             </h2>
 
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            <div className="grid grid-cols-1 gap-3 md:grid-cols-2 md:gap-4">
               {categoryBreakdown.map(({ category, sessions: count, time, share }, index) => (
                 <div
                   key={category.id}
@@ -397,7 +397,7 @@ function RouteComponent() {
                   style={getRevealStyle(470 + index * 55, prefersReducedMotion)}
                   data-analytics-motion
                 >
-                  <div className="flex items-center gap-4">
+                  <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:gap-4">
                     <div
                       className="flex size-10 items-center justify-center rounded-lg transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] motion-safe:group-hover:scale-105"
                       style={{ backgroundColor: `${category.color}20` }}
@@ -413,7 +413,7 @@ function RouteComponent() {
                       <p className="text-xs text-muted-foreground">{count} sessions</p>
                     </div>
 
-                    <div className="text-right">
+                    <div className="text-left sm:text-right">
                       <p className="text-sm font-semibold tabular-nums">{getFocusTime(time)}</p>
                       <p className="text-xs text-muted-foreground">{share}%</p>
                     </div>
@@ -438,10 +438,10 @@ function RouteComponent() {
             </div>
           </section>
 
-          <section className="mb-10">
+          <section className="mb-8 md:mb-10">
             <h2
               className={cn(
-                "mb-4 flex items-center gap-2 text-sm font-semibold text-foreground",
+                "mb-3 flex items-center gap-2 text-sm font-semibold text-foreground md:mb-4",
                 !prefersReducedMotion && "opacity-0"
               )}
               style={getRevealStyle(620, prefersReducedMotion)}
@@ -453,13 +453,13 @@ function RouteComponent() {
 
             <div
               className={cn(
-                "rounded-xl border border-border bg-background p-6 transition-shadow duration-300 motion-safe:hover:shadow-sm",
+                "rounded-xl border border-border bg-background p-4 transition-shadow duration-300 motion-safe:hover:shadow-sm sm:p-6",
                 !prefersReducedMotion && "opacity-0"
               )}
               style={getRevealStyle(670, prefersReducedMotion)}
               data-analytics-motion
             >
-              <div className="flex h-40 items-end justify-between gap-2">
+              <div className="flex h-40 items-end justify-between gap-1.5 sm:gap-2">
                 {dayOfWeekData.map(({ day, time, sessions: sessionCount }) => {
                   const height = (time / maxDayTime) * 100;
                   const isActiveDay = sessionCount > 0;
@@ -469,12 +469,12 @@ function RouteComponent() {
                       key={day}
                       className="group flex h-full flex-1 flex-col items-center justify-end gap-2"
                     >
-                      <div className="flex h-5 items-center justify-center text-[11px] font-medium">
+                      <div className="flex h-5 items-center justify-center text-[10px] font-medium sm:text-[11px]">
                         <span
                           className={cn(
                             "whitespace-nowrap transition-opacity duration-200",
                             isActiveDay
-                              ? "text-ocean-800 opacity-0 motion-safe:group-hover:opacity-100"
+                              ? "text-ocean-800 opacity-100 sm:opacity-0 sm:motion-safe:group-hover:opacity-100"
                               : "text-transparent"
                           )}
                         >
@@ -483,7 +483,7 @@ function RouteComponent() {
                       </div>
 
                       <div className="flex h-24 w-full flex-col items-center justify-end">
-                        <div className="flex h-full w-full max-w-8 items-end overflow-hidden rounded-md bg-ocean-700/10">
+                        <div className="flex h-full w-full max-w-7 items-end overflow-hidden rounded-md bg-ocean-700/10 sm:max-w-8">
                           <div
                             className={cn(
                               "w-full rounded-md transition-colors duration-300",
@@ -503,9 +503,9 @@ function RouteComponent() {
                         <span className="text-xs text-muted-foreground">{day}</span>
                         <p
                           className={cn(
-                            "text-[11px] transition-opacity duration-200",
+                            "text-[10px] transition-opacity duration-200 sm:text-[11px]",
                             isActiveDay
-                              ? "text-ocean-800/80 opacity-0 motion-safe:group-hover:opacity-100"
+                              ? "text-ocean-800/80 opacity-100 sm:opacity-0 sm:motion-safe:group-hover:opacity-100"
                               : "text-transparent"
                           )}
                         >
@@ -532,7 +532,7 @@ function RouteComponent() {
               Averages
             </h2>
 
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+            <div className="grid grid-cols-1 gap-3 md:grid-cols-3 md:gap-4">
               {[
                 { label: "Avg Session", value: getFocusTime(avgSessionTime) },
                 { label: "Total Time", value: getFocusTime(totalTime) },
@@ -541,7 +541,7 @@ function RouteComponent() {
                 <div
                   key={item.label}
                   className={cn(
-                    "group rounded-xl border border-border bg-background p-5 transition-[transform,box-shadow,border-color] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] motion-safe:hover:-translate-y-1 motion-safe:hover:border-ocean-200/80 motion-safe:hover:shadow-md",
+                    "group rounded-xl border border-border bg-background p-4 md:p-5 transition-[transform,box-shadow,border-color] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] motion-safe:hover:-translate-y-1 motion-safe:hover:border-ocean-200/80 motion-safe:hover:shadow-md",
                     !prefersReducedMotion && "opacity-0"
                   )}
                   style={getRevealStyle(920 + index * 60, prefersReducedMotion)}
@@ -550,7 +550,7 @@ function RouteComponent() {
                   <p className="mb-2 text-xs font-medium uppercase tracking-wider text-muted-foreground">
                     {item.label}
                   </p>
-                  <p className="text-2xl font-bold text-foreground transition-colors duration-300 motion-safe:group-hover:text-ocean-900">
+                  <p className="text-[1.35rem] font-bold text-foreground transition-colors duration-300 motion-safe:group-hover:text-ocean-900 sm:text-2xl">
                     {item.value}
                   </p>
                 </div>

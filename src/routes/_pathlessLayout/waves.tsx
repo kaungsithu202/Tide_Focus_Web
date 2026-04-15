@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState, type CSSProperties } from "react";
 import { useGetAllCategories, useDeleteCategory, useCreateCategory, useUpdateCategory } from "@/features/focus/queries";
 import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
@@ -42,6 +42,12 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { cn } from "@/lib/utils";
+
+const REVEAL_CLASS =
+  "motion-safe:animate-[overview-card-in_480ms_cubic-bezier(0.22,1,0.36,1)_both] motion-safe:opacity-0";
+
+const getDelay = (ms: number): CSSProperties => ({ animationDelay: `${ms}ms` });
 
 export const Route = createFileRoute("/_pathlessLayout/waves")({
   component: RouteComponent,
@@ -189,6 +195,20 @@ function RouteComponent() {
   const [editCategory, setEditCategory] = useState<{ id: string; name: string; color: string } | null>(null);
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [deleteCategoryId, setDeleteCategoryId] = useState<string | null>(null);
+  const [revealedCount, setRevealedCount] = useState(0);
+
+  useEffect(() => {
+    if (!categories?.length || isLoading) return;
+    setRevealedCount(0);
+    let count = 0;
+    const batchSize = 3;
+    const interval = setInterval(() => {
+      count += batchSize;
+      setRevealedCount(Math.min(count, categories.length));
+      if (count >= categories.length) clearInterval(interval);
+    }, 60);
+    return () => clearInterval(interval);
+  }, [categories?.length, isLoading]);
 
   const handleDelete = async () => {
     if (!deleteCategoryId) return;
@@ -226,7 +246,7 @@ function RouteComponent() {
 
   return (
     <div className="container md:container-md py-8 md:py-12">
-      <header className="mb-8">
+      <header className={cn(REVEAL_CLASS, "mb-8")}>
         <p className="text-xs font-medium text-ocean-700/80 uppercase tracking-widest mb-2">
           Manage
         </p>
@@ -238,16 +258,22 @@ function RouteComponent() {
         </p>
       </header>
 
-      <div className="flex justify-end mb-6">
-        <Button onClick={() => setShowCreateDialog(true)} className="bg-ocean-700 hover:bg-ocean-800 gap-2">
+      <div className={cn(REVEAL_CLASS, "flex justify-end mb-6")} style={getDelay(60)}>
+        <Button
+          onClick={() => setShowCreateDialog(true)}
+          className={cn(
+            "bg-ocean-700 hover:bg-ocean-800 gap-2",
+            "transition-[transform,box-shadow,background-color] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] motion-safe:hover:-translate-y-0.5 motion-safe:active:scale-[0.98] motion-reduce:transition-none shadow-[0_14px_24px_-14px_rgba(2,54,123,0.5)]"
+          )}
+        >
           <Plus size={16} />
           Create Wave
         </Button>
       </div>
 
       {categories?.length === 0 ? (
-        <div className="rounded-2xl border border-dashed border-border p-12 text-center bg-muted/20">
-          <div className="flex size-14 items-center justify-center rounded-full bg-ocean-700/8 text-ocean-700 mx-auto mb-4">
+        <div className={cn(REVEAL_CLASS, "rounded-2xl border border-dashed border-border p-12 text-center bg-muted/20")} style={getDelay(80)}>
+          <div className="flex size-14 items-center justify-center rounded-full bg-ocean-700/8 text-ocean-700 mx-auto mb-4 motion-safe:animate-[gentle-breathe_4s_ease-in-out_infinite] motion-reduce:animate-none">
             <Waves size={28} />
           </div>
           <p className="text-base font-medium text-foreground mb-2">
@@ -262,11 +288,21 @@ function RouteComponent() {
         </div>
       ) : (
         <div className="grid gap-3">
-          {categories?.map((category) => (
-            <div
-              key={category.id}
-              className="flex items-center gap-4 rounded-xl border border-border bg-background p-4 hover:border-ocean-200 transition-colors"
-            >
+          {categories?.map((category, index) => {
+            const isRevealed = index < revealedCount;
+
+            return (
+              <div
+                key={category.id}
+                className={cn(
+                  "flex items-center gap-4 rounded-xl border border-border bg-background p-4",
+                  "transition-[transform,box-shadow,border-color] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] motion-safe:hover:-translate-y-0.5 motion-safe:hover:shadow-sm motion-safe:hover:border-ocean-200/80 motion-reduce:transition-none",
+                  isRevealed
+                    ? cn(REVEAL_CLASS, "opacity-100")
+                    : "opacity-0"
+                )}
+                style={isRevealed ? getDelay((index % 3) * 60) : undefined}
+              >
               <div
                 className="flex size-10 items-center justify-center rounded-lg"
                 style={{ backgroundColor: `${category.color}20` }}
@@ -303,7 +339,8 @@ function RouteComponent() {
                 </Button>
               </div>
             </div>
-          ))}
+          );
+          })}
         </div>
       )}
 

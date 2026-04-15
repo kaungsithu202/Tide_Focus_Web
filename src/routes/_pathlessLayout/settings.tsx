@@ -16,6 +16,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Input } from "@/components/ui/input";
+import { cn } from "@/lib/utils";
 import {
   Dialog,
   DialogContent,
@@ -49,7 +50,10 @@ const getErrorMessage = (error: unknown) => {
 
 function ProfileCard({ user, isLoading }: { user?: { name: string; email: string } | null; isLoading: boolean }) {
   return (
-    <div className="rounded-2xl border border-border bg-background p-6">
+    <div className={cn(
+      "rounded-2xl border border-border bg-background p-6",
+      "transition-[transform,box-shadow,border-color] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] motion-safe:hover:-translate-y-0.5 motion-safe:hover:shadow-sm motion-safe:hover:border-ocean-200/80 motion-reduce:transition-none"
+    )}>
       <h2 className="text-sm font-medium text-muted-foreground uppercase tracking-wider mb-5">
         Profile
       </h2>
@@ -97,7 +101,10 @@ function TwoFactorCard({
   const isEnabled = user?.twoFaEnable;
   
   return (
-    <div className="rounded-2xl border border-border bg-background p-6">
+    <div className={cn(
+      "rounded-2xl border border-border bg-background p-6",
+      "transition-[transform,box-shadow,border-color] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] motion-safe:hover:-translate-y-0.5 motion-safe:hover:shadow-sm motion-safe:hover:border-ocean-200/80 motion-reduce:transition-none"
+    )}>
       <div className="flex items-center justify-between mb-5">
         <h2 className="text-sm font-medium text-muted-foreground uppercase tracking-wider">
           Two-factor authentication
@@ -105,7 +112,7 @@ function TwoFactorCard({
         {isEnabled ? (
           <ShieldCheck className="size-5 text-ocean-600" />
         ) : (
-          <ShieldAlert className="size-5 text-amber-600" />
+          <ShieldAlert className="size-5 text-amber-600 motion-safe:animate-[gentle-breathe_3s_ease-in-out_infinite] motion-reduce:animate-none" />
         )}
       </div>
       
@@ -271,7 +278,12 @@ function RouteComponent() {
 
   return (
     <div className="container md:container-md py-8 md:py-12">
-      <header className="mb-10">
+      <header
+        className={cn(
+          "mb-10",
+          "motion-safe:animate-[overview-card-in_480ms_cubic-bezier(0.22,1,0.36,1)_both] motion-safe:opacity-0"
+        )}
+      >
         <p className="text-xs font-medium text-ocean-700/80 uppercase tracking-widest mb-2">
           Settings
         </p>
@@ -281,12 +293,24 @@ function RouteComponent() {
       </header>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <ProfileCard user={user} isLoading={isLoadingUser} />
-        <TwoFactorCard
-          user={user}
-          onEnable={() => handleSetupDialogChange(true)}
-          onDisable={() => handleDisableDialogChange(true)}
-        />
+        <div
+          className={cn(
+            "motion-safe:animate-[overview-card-in_480ms_80ms_cubic-bezier(0.22,1,0.36,1)_both] motion-safe:opacity-0"
+          )}
+        >
+          <ProfileCard user={user} isLoading={isLoadingUser} />
+        </div>
+        <div
+          className={cn(
+            "motion-safe:animate-[overview-card-in_480ms_140ms_cubic-bezier(0.22,1,0.36,1)_both] motion-safe:opacity-0"
+          )}
+        >
+          <TwoFactorCard
+            user={user}
+            onEnable={() => handleSetupDialogChange(true)}
+            onDisable={() => handleDisableDialogChange(true)}
+          />
+        </div>
       </div>
 
       <Dialog open={setupOpen} onOpenChange={handleSetupDialogChange}>

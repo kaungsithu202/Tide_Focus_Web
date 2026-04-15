@@ -115,9 +115,23 @@ const WaveForm = ({
           });
 
     toast.promise(mutation, {
-      loading: "Loading...",
-      success: mode === "editWave" ? "Wave updated" : "Wave created",
-      error: "Error",
+      loading:
+        mode === "editWave"
+          ? `Saving "${selectedCategory?.name}"...`
+          : "Creating wave...",
+      success: (res: { name?: string } | undefined) => {
+        const name = res?.name ?? values.name;
+        return mode === "editWave"
+          ? `"${name}" updated`
+          : `"${name}" created`;
+      },
+      error: (err: unknown) => {
+        const msg =
+          err instanceof Error ? err.message : "Something went wrong";
+        return mode === "editWave"
+          ? `Failed to update wave — ${msg}`
+          : `Failed to create wave — ${msg}`;
+      },
     });
   }
 
@@ -150,7 +164,7 @@ const WaveForm = ({
               <FormLabel className="text-xs font-medium">Color</FormLabel>
               <FormControl>
                 <div>
-                  <div className="flex flex-wrap gap-1">
+                  <div className="flex flex-wrap gap-1.5">
                     {PRESET_COLORS.map((color) => (
                       <button
                         key={color}
@@ -197,9 +211,20 @@ const WaveForm = ({
           )}
         />
 
-        <Button type="submit" variant="ocean" className="w-full h-9">
-          {mode === "editWave" ? "Save Changes" : "Create Wave"}
-        </Button>
+        <div className="flex flex-col items-center gap-2">
+          <Button type="submit" variant="ocean" className="w-full h-9">
+            {mode === "editWave" ? "Save changes" : "Create wave"}
+          </Button>
+          {mode === "editWave" && (
+            <button
+              type="button"
+              onClick={onSwitchToAdd}
+              className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+            >
+              Cancel editing
+            </button>
+          )}
+        </div>
       </form>
     </Form>
   );

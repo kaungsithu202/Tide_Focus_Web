@@ -189,7 +189,7 @@ export function LoginForm({ redirectTo }: LoginFormProps) {
   return (
     <div className="w-full max-w-sm space-y-8">
       <div className="space-y-2 text-center">
-        <h1 className="text-3xl md:text-4xl font-bold tracking-tight">
+        <h1 className="text-3xl font-bold tracking-tight text-ocean-700 md:text-4xl">
           {isTwoFactorStep ? "Two-factor verification" : "Welcome back"}
         </h1>
         <p className="text-sm text-muted-foreground">
@@ -324,13 +324,13 @@ export function LoginForm({ redirectTo }: LoginFormProps) {
       {!isTwoFactorStep && (
         <p className="text-center text-sm text-muted-foreground">
           Don't have an account?{" "}
-              <Link
-                to="/forgot-password"
-                search={redirectTo ? { redirect: redirectTo } : {}}
-                className="text-xs text-muted-foreground hover:text-foreground transition-colors"
-              >
-                Forgot password?
-              </Link>
+          <Link
+            to="/register"
+            search={redirectTo ? { redirect: redirectTo } : {}}
+            className="font-medium text-ocean-700 underline underline-offset-4 transition-colors hover:text-ocean-800"
+          >
+            Create one
+          </Link>
         </p>
       )}
     </div>

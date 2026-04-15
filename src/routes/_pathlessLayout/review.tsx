@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useIsMobile } from "@/hooks/use-mobile";
 import {
   useDeleteSession,
   useGetAllSessions,
@@ -37,7 +38,7 @@ import {
   ArrowDown,
   Calendar as CalendarIcon,
 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
@@ -57,6 +58,7 @@ function DateRangePickerTrigger({
   onDateRangeChange: (range: { from: Date; to: Date }) => void;
 }) {
   const [open, setOpen] = useState(false);
+  const isMobile = useIsMobile();
 
   const handleSelect = (range: { from?: Date; to?: Date } | undefined) => {
     if (range?.from && range?.to) {
@@ -74,27 +76,32 @@ function DateRangePickerTrigger({
           variant="outline"
           id="review-date-range"
           className={cn(
-            "h-9 w-auto justify-start px-2.5 text-left font-normal",
+            "h-9 w-full justify-start px-2.5 text-left font-normal sm:w-auto",
             !dateRange && "text-muted-foreground"
           )}
         >
           <CalendarIcon size={14} className="mr-2" />
-          {dateRange.from ? (
-            <>
+          <span className="min-w-0 truncate">
+            {dateRange.from ? (
+              <>
               {format(dateRange.from, "MMM d")} - {format(dateRange.to, "MMM d, yyyy")}
-            </>
-          ) : (
-            "Pick a date range"
-          )}
+              </>
+            ) : (
+              "Pick a date range"
+            )}
+          </span>
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-auto min-w-[560px] max-w-[600px] p-0" align="start">
+      <PopoverContent
+        className="w-[min(calc(100vw-1rem),600px)] p-0"
+        align={isMobile ? "center" : "start"}
+      >
         <Calendar
           mode="range"
           defaultMonth={dateRange.from}
           selected={{ from: dateRange.from, to: dateRange.to }}
           onSelect={handleSelect}
-          numberOfMonths={2}
+          numberOfMonths={isMobile ? 1 : 2}
           disabled={(date) => date > new Date()}
           sessions={[]}
           showSessionTooltips={false}
@@ -111,6 +118,7 @@ function RouteComponent() {
   });
   const [sort, setSort] = useState<SortOption>("newest");
   const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
+  const [revealedCount, setRevealedCount] = useState(0);
 
   const startDate = startOfDay(dateRange.from).toISOString();
   const endDate = endOfDay(dateRange.to).toISOString();
@@ -134,6 +142,19 @@ function RouteComponent() {
 
   const hasSessions = sortedSessions.length > 0;
 
+  useEffect(() => {
+    if (!hasSessions || isLoading) return;
+    setRevealedCount(0);
+    let count = 0;
+    const batchSize = 4;
+    const interval = setInterval(() => {
+      count += batchSize;
+      setRevealedCount(Math.min(count, sortedSessions.length));
+      if (count >= sortedSessions.length) clearInterval(interval);
+    }, 60);
+    return () => clearInterval(interval);
+  }, [sortedSessions.length, hasSessions, isLoading, dateRange, sort]);
+
   const handleDelete = () => {
     if (!deleteTarget) return;
     deleteSession(deleteTarget, {
@@ -150,7 +171,11 @@ function RouteComponent() {
 
   return (
     <div className="container md:container-md py-6 md:py-8">
-      <header className="mb-8">
+      <header
+        className={cn(
+          "mb-8 motion-safe:animate-[review-row-in_500ms_cubic-bezier(0.22,1,0.36,1)_both] motion-safe:opacity-0"
+        )}
+      >
         <div className="flex items-center gap-2 mb-2">
           <CalendarIcon size={14} className="text-ocean-700" />
           <span className="text-xs font-medium text-ocean-700/80 uppercase tracking-widest">
@@ -165,8 +190,13 @@ function RouteComponent() {
         </p>
       </header>
 
-      <div className="flex flex-wrap items-end gap-4 mb-8 p-4 rounded-xl bg-muted/30 border border-border/50">
-        <div className="flex flex-col gap-1.5">
+      <div
+        className={cn(
+          "mb-8 flex flex-col gap-4 rounded-xl border border-border/50 bg-muted/30 p-4 md:flex-row md:flex-wrap md:items-end",
+          "motion-safe:animate-[review-row-in_500ms_80ms_cubic-bezier(0.22,1,0.36,1)_both] motion-safe:opacity-0"
+        )}
+      >
+        <div className="flex w-full flex-col gap-1.5 sm:w-auto">
           <label className="text-xs font-medium text-muted-foreground">
             Date Range
           </label>
@@ -175,33 +205,46 @@ function RouteComponent() {
             onDateRangeChange={setDateRange}
           />
         </div>
-        <div className="flex flex-col gap-1.5">
+        <div className="flex w-full flex-col gap-1.5 sm:w-auto">
           <label className="text-xs font-medium text-muted-foreground">
             Sort
           </label>
-          <div className="flex items-center gap-1">
+          <div className="relative inline-grid w-full max-w-xs grid-cols-2 items-center rounded-md border border-border/70 bg-background p-0.5 sm:w-auto sm:min-w-[13rem]">
+            <span
+              aria-hidden="true"
+              className={cn(
+                "pointer-events-none absolute inset-y-0.5 left-0.5 w-[calc(50%-0.25rem)] rounded-sm bg-ocean-700 transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none",
+                sort === "oldest" && "translate-x-full"
+              )}
+            />
             <Button
-              variant={sort === "newest" ? "default" : "outline"}
+              variant="ghost"
               size="sm"
               onClick={() => setSort("newest")}
-              className={sort === "newest" ? "bg-ocean-700 hover:bg-ocean-800" : ""}
+              className={cn(
+                "relative z-10 rounded-sm border-0 shadow-none text-xs transition-[color,transform] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] px-3 motion-safe:hover:-translate-y-px motion-reduce:transition-none",
+                sort === "newest" ? "text-white hover:text-white" : "text-muted-foreground hover:text-foreground"
+              )}
             >
-              <ArrowDown size={14} className="mr-1" />
+              <ArrowDown size={12} className="mr-1" />
               Newest
             </Button>
             <Button
-              variant={sort === "oldest" ? "default" : "outline"}
+              variant="ghost"
               size="sm"
               onClick={() => setSort("oldest")}
-              className={sort === "oldest" ? "bg-ocean-700 hover:bg-ocean-800" : ""}
+              className={cn(
+                "relative z-10 rounded-sm border-0 shadow-none text-xs transition-[color,transform] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] px-3 motion-safe:hover:-translate-y-px motion-reduce:transition-none",
+                sort === "oldest" ? "text-white hover:text-white" : "text-muted-foreground hover:text-foreground"
+              )}
             >
-              <ArrowUp size={14} className="mr-1" />
+              <ArrowUp size={12} className="mr-1" />
               Oldest
             </Button>
           </div>
         </div>
-        <div className="flex-1" />
-        <div className="flex items-center gap-6 text-sm">
+        <div className="hidden flex-1 md:block" />
+        <div className="flex w-full flex-wrap items-center gap-4 text-sm sm:gap-6 md:w-auto">
           <div className="flex items-center gap-2">
             <HourglassIcon size={14} className="text-ocean-700" />
             <span className="text-muted-foreground">Time:</span>
@@ -237,8 +280,8 @@ function RouteComponent() {
         ) : isLoading ? (
           <div className="space-y-0 divide-y divide-border">
             {Array.from({ length: 3 }).map((_, i) => (
-              <div key={i} className="flex items-start gap-5 py-5">
-                <div className="w-14 space-y-1">
+              <div key={i} className="flex flex-col gap-3 py-5 sm:flex-row sm:items-start sm:gap-5">
+                <div className="flex items-center gap-2 sm:block sm:w-14 sm:space-y-1">
                   <Skeleton className="h-3.5 w-10" />
                   <Skeleton className="h-2.5 w-6" />
                 </div>
@@ -274,7 +317,7 @@ function RouteComponent() {
         ) : (
           <>
             <div className="space-y-0 divide-y divide-border">
-              {sortedSessions.map((s) => {
+              {sortedSessions.map((s, index) => {
                 const start = new Date(s.startedAt);
                 const duration =
                   differenceInMinutes(new Date(s.endedAt), start) ||
@@ -283,24 +326,30 @@ function RouteComponent() {
                   Math.min((duration / 120) * 100, 100),
                   8
                 );
+                const isRevealed = index < revealedCount;
 
                 return (
                   <div
                     key={s.id}
-                    className="group relative flex items-start gap-5 py-5 first:pt-2 last:pb-0"
+                    className={cn(
+                      "group relative flex flex-col gap-3 py-5 first:pt-2 last:pb-0 transition-opacity duration-300 sm:flex-row sm:items-start sm:gap-5",
+                      !isRevealed && "opacity-0",
+                      isRevealed && "opacity-100 motion-safe:animate-[review-row-in_360ms_cubic-bezier(0.22,1,0.36,1)_both]"
+                    )}
+                    style={isRevealed ? { animationDelay: `${(index % 4) * 40}ms` } : undefined}
                   >
-                    <div className="w-14 shrink-0 pt-0.5">
+                    <div className="flex items-baseline gap-2 text-left sm:block sm:w-14 sm:shrink-0 sm:pt-0.5">
                       <p className="text-xs font-medium tabular-nums text-muted-foreground">
                         {format(start, "MMM d")}
                       </p>
-                      <p className="text-[11px] leading-tight text-muted-foreground/60 uppercase">
+                      <p className="text-[11px] leading-tight uppercase text-muted-foreground/60 sm:mt-1">
                         {format(start, "h:mm a")}
                       </p>
                     </div>
 
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center justify-between gap-3">
-                        <div className="flex items-center gap-2 min-w-0">
+                    <div className="min-w-0 flex-1">
+                      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
+                        <div className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1">
                           <div
                             className="size-2.5 shrink-0 rounded-full"
                             style={{ backgroundColor: s.category.color }}
@@ -332,19 +381,20 @@ function RouteComponent() {
                           size="icon"
                           onClick={() => setDeleteTarget(s.id)}
                           aria-label={`Delete session: ${s.category.name}`}
-                          className="size-7 shrink-0 opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-destructive transition-opacity"
+                          className="size-7 shrink-0 self-end text-muted-foreground transition-opacity hover:text-destructive sm:self-auto lg:opacity-0 lg:group-hover:opacity-100"
                         >
                           <TrashIcon size={14} />
                         </Button>
                       </div>
 
-                      <div className="mt-2.5 flex items-center gap-3">
+                      <div className="mt-2 flex items-center gap-3 sm:mt-2.5">
                         <div
-                          className="h-2 rounded-full"
+                          className="h-2 rounded-full origin-left motion-safe:animate-[review-bar-grow_480ms_cubic-bezier(0.22,1,0.36,1)_both]"
                           style={{
                             width: `${barWidth}%`,
                             backgroundColor: s.category.color,
                             opacity: 0.5,
+                            animationDelay: `${(index % 4) * 40 + 120}ms`,
                           }}
                         />
                       </div>
@@ -354,8 +404,13 @@ function RouteComponent() {
               })}
             </div>
 
-            <footer className="mt-8 pt-6 border-t border-border">
-              <div className="flex items-baseline justify-between">
+            <footer
+              className={cn(
+                "mt-8 pt-6 border-t border-border",
+                "motion-safe:animate-[review-row-in_500ms_200ms_cubic-bezier(0.22,1,0.36,1)_both] motion-safe:opacity-0"
+              )}
+            >
+              <div className="flex flex-col gap-1 sm:flex-row sm:items-baseline sm:justify-between">
                 <p className="text-sm text-muted-foreground">Total focus time</p>
                 <p className="font-original-surfer text-lg text-ocean-800 tabular-nums">
                   {getFocusTime(totalFocusTime)}

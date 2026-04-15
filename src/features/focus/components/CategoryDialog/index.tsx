@@ -6,7 +6,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Waves } from "lucide-react";
+import { Plus, Waves } from "lucide-react";
 import { useState, type Dispatch, type SetStateAction } from "react";
 import type { Category } from "../../types";
 import Wave from "../Wave";
@@ -41,45 +41,87 @@ const CategoryDialog = ({
           </DialogDescription>
         </DialogHeader>
 
-        <div className="p-5 pt-3 space-y-4">
-          <div className="max-h-[160px] overflow-y-auto rounded-md border">
-            <IfElse
-              isTrue={!!categories?.length}
-              ifBlock={
-                <div className="p-1">
-                  {categories?.map((category) => (
-                    <Wave
-                      key={category.id}
-                      onSetMode={setMode}
-                      onSelectCategory={(cat) => {
-                        setSelectedCategory(cat);
-                        setMode("editWave");
-                      }}
-                      category={category}
-                      isSelected={selectedCategory?.id === category.id}
-                    />
-                  ))}
-                </div>
-              }
-              elseBlock={
-                <div className="flex items-center justify-center h-16 text-xs text-muted-foreground">
-                  No waves yet. Create one below.
-                </div>
-              }
-            />
+        <div className="p-6 pt-4 space-y-5">
+          <div className="space-y-2">
+            <div className="flex items-center justify-between px-0.5">
+              <span className="text-xs font-medium text-muted-foreground">
+                Your waves
+              </span>
+              <span className="text-[11px] text-muted-foreground/60">
+                Click a wave to edit it
+              </span>
+            </div>
+            <div className="max-h-[200px] overflow-y-auto rounded-lg border">
+              <IfElse
+                isTrue={!!categories?.length}
+                ifBlock={
+                  <div className="p-1.5">
+                    {categories?.map((category) => (
+                      <Wave
+                        key={category.id}
+                        onSetMode={setMode}
+                        onSelectCategory={(cat) => {
+                          setSelectedCategory(cat);
+                          setMode("editWave");
+                        }}
+                        category={category}
+                        isSelected={selectedCategory?.id === category.id}
+                      />
+                    ))}
+                  </div>
+                }
+                elseBlock={
+                  <div className="flex items-center justify-center h-16 text-xs text-muted-foreground">
+                    No waves yet. Create one below.
+                  </div>
+                }
+              />
+            </div>
           </div>
 
           <div className="h-px bg-border" />
 
-          <WaveForm
-            selectedCategory={selectedCategory}
-            mode={mode}
-            onSelectCategory={setSelectedCategory}
-            onSwitchToAdd={() => {
-              setSelectedCategory(null);
-              setMode("addWave");
-            }}
-          />
+          <div className="space-y-4">
+            <IfElse
+              isTrue={mode === "editWave" && !!selectedCategory}
+              ifBlock={
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-medium text-muted-foreground">
+                    Editing{" "}
+                    <span className="text-foreground">
+                      {selectedCategory?.name}
+                    </span>
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSelectedCategory(null);
+                      setMode("addWave");
+                    }}
+                    className="inline-flex items-center gap-1 text-xs font-medium text-ocean-700 hover:text-ocean-800 transition-colors"
+                  >
+                    <Plus size={10} />
+                    New wave
+                  </button>
+                </div>
+              }
+              elseBlock={
+                <span className="text-xs font-medium text-muted-foreground">
+                  Create a wave
+                </span>
+              }
+            />
+
+            <WaveForm
+              selectedCategory={selectedCategory}
+              mode={mode}
+              onSelectCategory={setSelectedCategory}
+              onSwitchToAdd={() => {
+                setSelectedCategory(null);
+                setMode("addWave");
+              }}
+            />
+          </div>
         </div>
       </DialogContent>
     </Dialog>
