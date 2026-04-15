@@ -3,3 +3,10 @@ export interface RegisterPayload {
   email: string;
   password: string;
 }
+
+export interface RegisterResponse {
+  message: string;
+  id: string;
+  accessToken: string;
+  refreshToken: string;
+}

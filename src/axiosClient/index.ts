@@ -1,7 +1,6 @@
 import { REFRESH_TOKEN } from "@/constants/endpoints";
 import { authGetter, authSetter } from "@/store";
 import axios, {
-  AxiosError,
   isAxiosError,
   type AxiosRequestConfig,
   type AxiosResponse,
@@ -10,12 +9,25 @@ import axios, {
 declare module "axios" {
   interface AxiosRequestConfig {
     _retry?: boolean;
+    skipAuthRefresh?: boolean;
   }
 }
 
+const getAxiosErrorMessage = (error: unknown) => {
+  if (!isAxiosError(error)) {
+    return error instanceof Error ? error.message : "Token refresh failed";
+  }
+
+  const data = error.response?.data as
+    | { error?: { message?: string }; message?: string }
+    | undefined;
+
+  return data?.error?.message || data?.message || error.message;
+};
+
 const axiosClient = axios.create({
-  // baseURL: "http://localhost:4000/api",
-  baseURL: "https://tide-focus.onrender.com/api",
+  baseURL: "http://localhost:4000/api",
+  // baseURL: "https://tide-focus.onrender.com/api",
   timeout: 10000,
   headers: {
     "Content-Type": "application/json",
@@ -53,7 +65,11 @@ axiosClient.interceptors.response.use(
   async (error) => {
     const originalRequest: AxiosRequestConfig = error.config;
 
-    if (error.response?.status === 401 && !originalRequest._retry) {
+    if (
+      error.response?.status === 401 &&
+      !originalRequest._retry &&
+      !originalRequest.skipAuthRefresh
+    ) {
       originalRequest._retry = true; // Prevent infinite retry loops
 
       if (!isRefreshing) {
@@ -64,7 +80,9 @@ axiosClient.interceptors.response.use(
           const res = await axiosClient.post<{
             accessToken: string;
             refreshToken: string;
-          }>(REFRESH_TOKEN);
+          }>(REFRESH_TOKEN, undefined, {
+            skipAuthRefresh: true,
+          });
 
           if (res.status === 200) {
             const newToken = res.data.accessToken;
@@ -104,6 +122,7 @@ axiosClient.interceptors.response.use(
             // Cleanup and redirect
             // Cookies.remove("token");
             // Cookies.remove("refreshToken");
+            authSetter(null);
             delete axiosClient.defaults.headers.common["Authorization"];
             window.location.href = "/";
 
@@ -119,15 +138,11 @@ axiosClient.interceptors.response.use(
 
           // Cleanup and redirect
 
+          authSetter(null);
           delete axiosClient.defaults.headers.common["Authorization"];
           window.location.href = "/";
 
-          if (isAxiosError(err)) {
-            throw new Error(
-              err.response?.data?.RespDescription || "Token refresh failed"
-            );
-          }
-          throw err;
+          throw new Error(getAxiosErrorMessage(err));
         } finally {
           isRefreshing = false;
         }

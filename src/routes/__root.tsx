@@ -1,5 +1,4 @@
-import { createRootRoute, Link, Outlet } from "@tanstack/react-router";
-import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
+import { createRootRoute, Outlet } from "@tanstack/react-router";
 import { Toaster } from "sonner";
 import { NuqsAdapter } from "nuqs/adapters/tanstack-router";
 const RootLayout = () => (

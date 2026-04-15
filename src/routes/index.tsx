@@ -1,79 +1,242 @@
-import { useGetRefreshToken } from "@/api/queries";
-import { getRefreshTokenService } from "@/api/services";
 import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight } from "lucide-react";
-import { use } from "react";
+import {
+  ArrowRight,
+  Waves,
+  Timer,
+  CircleDot,
+  Clock,
+  CheckCircle2,
+} from "lucide-react";
 
 export const Route = createFileRoute("/")({
   component: RouteComponent,
 });
 
+const sessions = [
+  {
+    title: "Product roadmap planning",
+    duration: "45 min focus + 10 min break",
+    time: "9:00 AM",
+    status: "complete" as const,
+    color: "ocean-700",
+  },
+  {
+    title: "Deep coding sprint",
+    duration: "90 min flow + 20 min walk",
+    time: "11:00 AM",
+    status: "active" as const,
+    color: "ocean-500",
+    elapsed: 34,
+    total: 90,
+  },
+  {
+    title: "Weekly review & planning",
+    duration: "30 min reflection",
+    time: "3:00 PM",
+    status: "upcoming" as const,
+    color: "ocean-300",
+  },
+];
+
 function RouteComponent() {
   return (
-    <div>
-      <header className="flex items-center justify-around py-5" role="banner">
-        <nav
-          className="flex items-center gap-3"
-          aria-label="Tide Focus navigation"
-        >
-          <img
-            src="/images/logo.png"
-            width={40}
-            height={40}
-            alt="Tide Focus logo — blue ocean wave icon"
-            className="size-5 md:size-10"
-          />
-          <h1 className="font-extrabold text-lg md:text-2xl text-ocean-800 font-original-surfer">
-            Tide Focus
-          </h1>
-        </nav>
+    <div className="relative min-h-screen overflow-hidden">
+      <div className="absolute inset-0 bg-gradient-to-b from-ocean-100/15 via-background to-background" />
 
-        <Button
-          asChild
-          variant="default"
-          aria-label="Get started with Tide Focus"
-        >
-          <Link to="/login" className="text-xs md:text-sm">
-            Get Started
-          </Link>
-        </Button>
+      <svg
+        viewBox="0 0 1800 320"
+        className="pointer-events-none absolute bottom-0 left-0 right-0 h-48 w-full opacity-[0.12] md:h-64 lg:h-80"
+        preserveAspectRatio="none"
+        aria-hidden="true"
+      >
+        <path
+          d="M0 200 C200 180 400 220 600 200 C800 180 1000 160 1200 190 C1400 210 1600 180 1800 200 L1800 320 L0 320 Z"
+          fill="#02367b"
+          style={{ animation: "wave-drift-1 8s ease-in-out infinite" }}
+        />
+        <path
+          d="M0 210 C300 190 500 240 700 210 C900 185 1100 220 1300 195 C1500 215 1700 190 1800 205 L1800 320 L0 320 Z"
+          fill="#0496c7"
+          style={{ animation: "wave-drift-2 10s ease-in-out infinite" }}
+        />
+        <path
+          d="M0 225 C250 210 450 240 650 220 C850 200 1050 230 1250 215 C1450 225 1650 205 1800 220 L1800 320 L0 320 Z"
+          fill="#55e2e9"
+          style={{ animation: "wave-drift-3 12s ease-in-out infinite" }}
+        />
+      </svg>
+
+      <header className="relative z-10" role="banner">
+        <div className="container flex items-center justify-between py-5">
+          <nav
+            className="flex items-center gap-2.5"
+            aria-label="Tide Focus navigation"
+          >
+            <img
+              src="/images/logo-rm.png"
+              width={32}
+              height={32}
+              alt="Tide Focus logo"
+              className="size-8"
+            />
+            <span className="font-original-surfer text-xl text-ocean-800">
+              Tide Focus
+            </span>
+          </nav>
+
+          <div className="flex items-center gap-2">
+            <Button asChild variant="ghost">
+              <Link to="/login">Log in</Link>
+            </Button>
+            <Button asChild variant="ocean">
+              <Link to="/register">Get started</Link>
+            </Button>
+          </div>
+        </div>
       </header>
 
-      <Separator aria-hidden="true" />
+      <main className="relative z-10">
+        <section className="container pt-16 pb-24 lg:pt-28 lg:pb-32">
+          <div className="max-w-2xl">
+            <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-ocean-300/50 bg-ocean-100/20 px-3 py-1 text-xs font-medium tracking-wide text-ocean-700">
+              <Waves size={13} aria-hidden="true" />
+              Focus sessions for deep workers
+            </div>
 
-      <main
-        className="flex flex-col items-center text-center leading-6 px-4"
-        role="main"
-      >
-        <section className="mt-20 max-w-2xl">
-          <h2 className="text-3xl md:text-5xl font-bold font-toucon text-ocean-800">
-            Find your flow. Focus with calm.
-          </h2>
-          <p className="text-gray-500 mt-5 text-sm md:text-base">
-            Tide Focus blends mindfulness and productivity to help you stay in
-            rhythm — focus deeply, rest intentionally, and make every moment
-            meaningful.
-          </p>
+            <h1 className="font-original-surfer text-4xl leading-[1.1] text-ocean-900 md:text-5xl lg:text-6xl lg:leading-[1.08]">
+              Build a calmer workday,
+              <br />
+              one tide at a time.
+            </h1>
 
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mt-8">
-            <Button variant="default" asChild>
-              <Link
-                to="/login"
-                className="flex items-center gap-1 text-xs md:text-sm"
-                aria-label="Try Tide Focus now"
-              >
-                Try It Now <ArrowRight aria-hidden="true" />
-              </Link>
-            </Button>
-
-            <p className="text-gray-500 text-xs md:text-sm">
-              Free forever • Start focusing in seconds
+            <p className="mt-6 max-w-lg text-base leading-7 text-muted-foreground md:text-lg md:leading-8">
+              Tide Focus gives you intentional focus sessions, restorative breaks,
+              and lightweight reflection — so you stay consistent without burning out.
             </p>
+
+            <div className="mt-8 flex items-center gap-3">
+              <Button size="lg" variant="ocean" asChild>
+                <Link to="/register" className="gap-2">
+                  Get started free
+                  <ArrowRight size={16} aria-hidden="true" />
+                </Link>
+              </Button>
+              <Button size="lg" variant="ghost" asChild>
+                <Link to="/login">Sign in</Link>
+              </Button>
+            </div>
+          </div>
+        </section>
+
+        <section className="container pb-24 lg:pb-32">
+          <div className="mx-auto max-w-3xl rounded-2xl border border-border bg-card/80 backdrop-blur-sm p-8 lg:p-10 shadow-sm">
+            <div className="flex items-center gap-3 mb-1">
+              <Timer size={18} className="text-ocean-500" aria-hidden="true" />
+              <h2 className="font-original-surfer text-2xl text-ocean-800 md:text-3xl">
+                Today's flow
+              </h2>
+            </div>
+            <p className="text-sm text-muted-foreground mb-8">
+              A snapshot of what a focused day looks like.
+            </p>
+
+            <div className="space-y-0 divide-y divide-border">
+              {sessions.map((session) => (
+                <div
+                  key={session.title}
+                  className={`flex items-center gap-4 py-5 first:pt-0 last:pb-0 ${
+                    session.status === "upcoming" ? "opacity-50" : ""
+                  }`}
+                >
+                  <div
+                    className={`flex size-9 shrink-0 items-center justify-center rounded-lg bg-${session.color}/10`}
+                  >
+                    {session.status === "complete" ? (
+                      <CheckCircle2 size={16} className="text-ocean-700" aria-hidden="true" />
+                    ) : session.status === "active" ? (
+                      <CircleDot size={16} className="text-ocean-500" aria-hidden="true" />
+                    ) : (
+                      <Clock size={16} className="text-muted-foreground" aria-hidden="true" />
+                    )}
+                  </div>
+
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2">
+                      <p className="text-sm font-medium text-foreground">
+                        {session.title}
+                      </p>
+                      {session.status === "active" && (
+                        <span className="inline-flex items-center gap-1 rounded-full bg-ocean-500/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-ocean-500">
+                          <span className="relative flex size-1.5">
+                            <span className="absolute inline-flex size-full animate-ping rounded-full bg-ocean-500 opacity-75" />
+                            <span className="relative inline-flex size-1.5 rounded-full bg-ocean-500" />
+                          </span>
+                          In flow
+                        </span>
+                      )}
+                    </div>
+                    <p className="mt-0.5 text-xs text-muted-foreground">
+                      {session.duration}
+                    </p>
+                  </div>
+
+                  <div className="shrink-0 text-right">
+                    {session.status === "active" && "elapsed" in session && "total" in session ? (
+                      <div className="flex flex-col items-end gap-1.5">
+                        <span className="text-xs font-medium tabular-nums text-ocean-500">
+                          {session.elapsed}m / {session.total}m
+                        </span>
+                        <div className="h-1 w-16 rounded-full bg-ocean-100">
+                          <div
+                            className="h-full rounded-full bg-ocean-500 transition-all"
+                            style={{ width: `${(session.elapsed / session.total) * 100}%` }}
+                          />
+                        </div>
+                      </div>
+                    ) : session.status === "complete" ? (
+                      <span className="text-xs font-medium text-ocean-700">Complete</span>
+                    ) : (
+                      <span className="text-xs font-medium text-muted-foreground">{session.time}</span>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section className="container pb-20 lg:pb-28">
+          <div className="mx-auto max-w-xl text-center">
+            <h2 className="font-original-surfer text-2xl text-ocean-900 md:text-3xl">
+              Less noise. More depth.
+            </h2>
+            <p className="mt-3 text-sm text-muted-foreground">
+              Free to use. No credit card, no setup friction.
+              Just open it and start your first session.
+            </p>
+            <div className="mt-6">
+              <Button size="lg" variant="ocean" asChild>
+                <Link to="/register" className="gap-2">
+                  Create free account
+                  <ArrowRight size={16} aria-hidden="true" />
+                </Link>
+              </Button>
+            </div>
           </div>
         </section>
       </main>
+
+      <footer className="relative z-10 border-t border-border">
+        <div className="container py-6 flex items-center justify-between text-xs text-muted-foreground">
+          <span>&copy; 2025 Tide Focus</span>
+          <div className="flex items-center gap-4">
+            <span>Privacy</span>
+            <span>Terms</span>
+            <span>Contact</span>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }

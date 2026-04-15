@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Original+Surfer&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Original+Surfer&display=swap");
 
 @import "tailwindcss";
 @import "tw-animate-css";
@@ -6,39 +6,39 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
+  --background: oklch(0.99 0.005 240);
+  --foreground: oklch(0.16 0.01 240);
+  --card: oklch(0.995 0.004 240);
+  --card-foreground: oklch(0.16 0.01 240);
+  --popover: oklch(0.995 0.004 240);
+  --popover-foreground: oklch(0.16 0.01 240);
+  --primary: oklch(0.205 0.01 240);
+  --primary-foreground: oklch(0.985 0.005 240);
+  --secondary: oklch(0.965 0.008 240);
+  --secondary-foreground: oklch(0.205 0.01 240);
+  --muted: oklch(0.965 0.008 240);
+  --muted-foreground: oklch(0.52 0.015 240);
+  --accent: oklch(0.955 0.015 240);
+  --accent-foreground: oklch(0.205 0.01 240);
   --destructive: oklch(0.577 0.245 27.325);
   --destructive-foreground: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
+  --border: oklch(0.915 0.008 240);
+  --input: oklch(0.915 0.008 240);
+  --ring: oklch(0.65 0.04 240);
   --chart-1: oklch(0.646 0.222 41.116);
   --chart-2: oklch(0.6 0.118 184.704);
   --chart-3: oklch(0.398 0.07 227.392);
   --chart-4: oklch(0.828 0.189 84.429);
   --chart-5: oklch(0.769 0.188 70.08);
   --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  --sidebar: oklch(0.98 0.006 240);
+  --sidebar-foreground: oklch(0.16 0.01 240);
+  --sidebar-primary: oklch(0.45 0.08 240);
+  --sidebar-primary-foreground: oklch(0.985 0.005 240);
+  --sidebar-accent: oklch(0.94 0.02 240);
+  --sidebar-accent-foreground: oklch(0.205 0.01 240);
+  --sidebar-border: oklch(0.91 0.01 240);
+  --sidebar-ring: oklch(0.65 0.04 240);
 }
 
 .dark {
@@ -109,6 +109,7 @@
 }
 
 @theme inline {
+  --font-sans: "DM Sans", system-ui, -apple-system, sans-serif;
   --font-toucon: "Toucon", sans-serif;
   --font-blue-ocean: "BlueOcean", sans-serif;
   --font-original-surfer: "Original Surfer", sans-serif;
@@ -163,5 +164,69 @@
   }
   body {
     @apply bg-background text-foreground;
+    font-family: "DM Sans", system-ui, -apple-system, sans-serif;
+  }
+}
+
+@keyframes wave-drift-1 {
+  0% { d: path("M0 200 C200 180 400 220 600 200 C800 180 1000 160 1200 190 C1400 210 1600 180 1800 200 L1800 320 L0 320 Z"); }
+  33% { d: path("M0 200 C200 170 400 230 600 195 C800 215 1000 175 1200 205 C1400 185 1600 215 1800 195 L1800 320 L0 320 Z"); }
+  66% { d: path("M0 210 C200 190 400 200 600 215 C800 185 1000 210 1200 185 C1400 205 1600 190 1800 210 L1800 320 L0 320 Z"); }
+  100% { d: path("M0 200 C200 180 400 220 600 200 C800 180 1000 160 1200 190 C1400 210 1600 180 1800 200 L1800 320 L0 320 Z"); }
+}
+
+@keyframes wave-drift-2 {
+  0% { d: path("M0 210 C300 190 500 240 700 210 C900 185 1100 220 1300 195 C1500 215 1700 190 1800 205 L1800 320 L0 320 Z"); }
+  33% { d: path("M0 220 C300 200 500 210 700 230 C900 200 1100 180 1300 215 C1500 195 1700 220 1800 210 L1800 320 L0 320 Z"); }
+  66% { d: path("M0 200 C300 220 500 195 700 215 C900 230 1100 200 1300 185 C1500 205 1700 215 1800 200 L1800 320 L0 320 Z"); }
+  100% { d: path("M0 210 C300 190 500 240 700 210 C900 185 1100 220 1300 195 C1500 215 1700 190 1800 205 L1800 320 L0 320 Z"); }
+}
+
+@keyframes wave-drift-3 {
+  0% { d: path("M0 225 C250 210 450 240 650 220 C850 200 1050 230 1250 215 C1450 225 1650 205 1800 220 L1800 320 L0 320 Z"); }
+  50% { d: path("M0 220 C250 235 450 210 650 230 C850 215 1050 195 1250 225 C1450 210 1650 230 1800 215 L1800 320 L0 320 Z"); }
+  100% { d: path("M0 225 C250 210 450 240 650 220 C850 200 1050 230 1250 215 C1450 225 1650 205 1800 220 L1800 320 L0 320 Z"); }
+}
+
+@keyframes gentle-breathe {
+  0%, 100% { opacity: 0.4; transform: scale(1); }
+  50% { opacity: 0.7; transform: scale(1.02); }
+}
+
+@keyframes soft-glow {
+  0%, 100% { box-shadow: 0 0 20px -5px rgba(4, 150, 199, 0.08); }
+  50% { box-shadow: 0 0 35px -5px rgba(4, 150, 199, 0.15); }
+}
+
+@keyframes analytics-fade-up {
+  0% {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes analytics-grow-y {
+  0% {
+    opacity: 0;
+    transform: scaleY(0.2);
+  }
+  100% {
+    opacity: 1;
+    transform: scaleY(1);
+  }
+}
+
+@keyframes analytics-grow-x {
+  0% {
+    opacity: 0;
+    transform: scaleX(0.2);
+  }
+  100% {
+    opacity: 1;
+    transform: scaleX(1);
   }
 }

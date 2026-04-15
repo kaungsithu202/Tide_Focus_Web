@@ -1,10 +1,10 @@
 export interface Category {
-  id: number;
-  userId: number;
+  id: string;
+  userId: string;
   name: string;
   color: string;
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export enum TimerType {
@@ -16,24 +16,28 @@ export interface CreateCategory {
   color: string;
 }
 
+export interface UpdateCategory extends CreateCategory {
+  id: string;
+}
+
 export interface SessionPayload {
-  categoryId: number;
-  type: string;
+  categoryId: string;
+  type: TimerType;
   durationSeconds?: number;
 }
 
 export interface SessionAction {
-  sessionId: number;
+  sessionId: string;
   payload: SessionPayload;
   action: "pause" | "start" | "complete" | "resume";
 }
 
 export interface CreateSessionResponse {
-  id: number;
-  userId: number;
-  categoryId: number;
-  type: string;
-  durationSeconds: null;
+  id: string;
+  userId: string;
+  categoryId: string;
+  type: TimerType;
+  durationSeconds: number | null;
   elapsedSeconds: number;
   totalPausedSeconds: number;
   startedAt: string;
@@ -51,12 +55,12 @@ export interface GetAllSessions {
 
 interface SessionCategory {
   name: string;
-  id: number;
+  id: string;
   color: string;
 }
 
 export interface Session {
-  id: number;
+  id: string;
   startedAt: string;
   endedAt: string;
   elapsedSeconds: number;

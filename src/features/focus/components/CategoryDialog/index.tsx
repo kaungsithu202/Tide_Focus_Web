@@ -6,7 +6,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Waves } from "lucide-react";
 import { useState, type Dispatch, type SetStateAction } from "react";
 import type { Category } from "../../types";
@@ -24,77 +23,63 @@ const CategoryDialog = ({
   openCategoryDialog,
   setOpenCategoryDialog,
 }: Props) => {
-  const [mode, setMode] = useState("addWave");
+  const [mode, setMode] = useState<"addWave" | "editWave">("addWave");
   const [selectedCategory, setSelectedCategory] = useState<Category | null>(
     null
   );
 
-  console.log("selectedCategory", selectedCategory);
-
   return (
     <Dialog open={openCategoryDialog} onOpenChange={setOpenCategoryDialog}>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <Waves size={18} />
+      <DialogContent className="sm:max-w-[440px] p-0 overflow-hidden">
+        <DialogHeader className="px-5 pt-5 pb-0">
+          <DialogTitle className="flex items-center gap-2 text-base">
+            <Waves size={15} className="text-ocean-700" />
             Manage Waves
           </DialogTitle>
-          <DialogDescription className="my-2 text-sm">
-            Waves help you organize focus sessions by topic or project and track
-            time by each wave in Analytics.
+          <DialogDescription className="text-xs">
+            Organize focus sessions by topic or project.
           </DialogDescription>
         </DialogHeader>
 
-        <div className="flex gap-3">
-          <div className="w-[60%] text-xs bg-gray-50 p-2 rounded-md h-80">
-            <h2 className="font-medium mb-3">Current Waves</h2>
+        <div className="p-5 pt-3 space-y-4">
+          <div className="max-h-[160px] overflow-y-auto rounded-md border">
             <IfElse
               isTrue={!!categories?.length}
               ifBlock={
-                <div className="grid gap-1">
+                <div className="p-1">
                   {categories?.map((category) => (
                     <Wave
                       key={category.id}
                       onSetMode={setMode}
-                      onSelectCategory={setSelectedCategory}
+                      onSelectCategory={(cat) => {
+                        setSelectedCategory(cat);
+                        setMode("editWave");
+                      }}
                       category={category}
+                      isSelected={selectedCategory?.id === category.id}
                     />
                   ))}
                 </div>
               }
               elseBlock={
-                <div className="flex items-center justify-center py-10 px-3 border border-dotted rounded-lg bg-white text-gray-400">
-                  <p>No waves yet.</p>
+                <div className="flex items-center justify-center h-16 text-xs text-muted-foreground">
+                  No waves yet. Create one below.
                 </div>
               }
             />
           </div>
-          <div className="w-full">
-            <Tabs value={mode} onValueChange={setMode} defaultValue="addWave">
-              <TabsList>
-                <TabsTrigger value="addWave" className="text-xs">
-                  Add Wave
-                </TabsTrigger>
-                <TabsTrigger value="editWave" className="text-xs">
-                  Edit Wave
-                </TabsTrigger>
-              </TabsList>
-              <TabsContent value="addWave">
-                <WaveForm
-                  selectedCategory={selectedCategory}
-                  mode={mode}
-                  onSelectCategory={setSelectedCategory}
-                />
-              </TabsContent>
-              <TabsContent value="editWave">
-                <WaveForm
-                  selectedCategory={selectedCategory}
-                  mode={mode}
-                  onSelectCategory={setSelectedCategory}
-                />
-              </TabsContent>
-            </Tabs>
-          </div>
+
+          <div className="h-px bg-border" />
+
+          <WaveForm
+            selectedCategory={selectedCategory}
+            mode={mode}
+            onSelectCategory={setSelectedCategory}
+            onSwitchToAdd={() => {
+              setSelectedCategory(null);
+              setMode("addWave");
+            }}
+          />
         </div>
       </DialogContent>
     </Dialog>

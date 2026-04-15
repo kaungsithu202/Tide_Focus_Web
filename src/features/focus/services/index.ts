@@ -8,6 +8,7 @@ import type {
   Session,
   SessionAction,
   SessionPayload,
+  UpdateCategory,
 } from "../types";
 
 export const getAllCategoriesService = async (): Promise<Category[]> => {
@@ -15,7 +16,7 @@ export const getAllCategoriesService = async (): Promise<Category[]> => {
   return data;
 };
 
-export const deleteCategoryService = async (id: number): Promise<any> => {
+export const deleteCategoryService = async (id: string): Promise<any> => {
   const { data } = await axiosClient.delete(`${CATEGORIES}/${id}`);
   return data;
 };
@@ -24,6 +25,14 @@ export const createCategoryService = async (
   payload: CreateCategory
 ): Promise<any> => {
   const { data } = await axiosClient.post(CATEGORIES, payload);
+  return data;
+};
+
+export const updateCategoryService = async ({
+  id,
+  ...payload
+}: UpdateCategory): Promise<any> => {
+  const { data } = await axiosClient.put(`${CATEGORIES}/${id}`, payload);
   return data;
 };
 
@@ -43,6 +52,11 @@ export const getAllSessionsService = async (
       endDate: payload?.endDate,
     },
   });
+  return data;
+};
+
+export const deleteSessionService = async (id: string): Promise<any> => {
+  const { data } = await axiosClient.delete(`${SESSIONS}/${id}`);
   return data;
 };
 

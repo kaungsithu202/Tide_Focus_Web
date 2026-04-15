@@ -1,4 +1,4 @@
-import { X } from "lucide-react";
+import { Pencil, Trash2 } from "lucide-react";
 import { useDeleteCategory } from "../../queries";
 import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
@@ -8,16 +8,18 @@ import type { Dispatch, SetStateAction } from "react";
 
 interface Props {
   category: Category;
-  onSetMode: Dispatch<SetStateAction<string>>;
+  isSelected?: boolean;
+  onSetMode: Dispatch<SetStateAction<"addWave" | "editWave">>;
   onSelectCategory: Dispatch<SetStateAction<Category | null>>;
 }
 
-const Wave = ({ category, onSelectCategory, onSetMode }: Props) => {
+const Wave = ({ category, isSelected, onSelectCategory, onSetMode }: Props) => {
   const queryClient = useQueryClient();
 
   const { mutateAsync: deleteCategoryAsync } = useDeleteCategory();
 
-  const handleDelete = (id: number) => {
+  const handleDelete = (e: React.MouseEvent, id: string) => {
+    e.stopPropagation();
     toast.promise(
       deleteCategoryAsync(id, {
         onSuccess: () => {
@@ -31,30 +33,40 @@ const Wave = ({ category, onSelectCategory, onSetMode }: Props) => {
       }
     );
   };
+
   return (
-    <button
-      onClick={() => {
-        onSetMode("editWave");
-        onSelectCategory(category);
-      }}
-      className="flex items-center gap-3 w-full p-1 hover:bg-gray-100 rounded-md  transition-colors duration-200"
+    <div
+      onClick={() => onSelectCategory(category)}
+      className={`flex items-center gap-3 w-full px-3 py-2 rounded-md cursor-pointer transition-colors duration-150 group ${
+        isSelected
+          ? "bg-ocean-700/10 ring-1 ring-ocean-700/20"
+          : "hover:bg-muted"
+      }`}
     >
-      <div className="flex items-center gap-3 p-1.5 border border-gray-300 rounded-md text-[10px] w-full">
-        <div
-          className="size-2.5 rounded-full"
-          style={{ backgroundColor: category.color }}
-        />
-        <span>{category.name}</span>
-      </div>
       <div
-        onClick={() => {
-          handleDelete(category.id);
-        }}
-        className=" hover:bg-red-100 hover:text-red-500 p-1.5 rounded-xl transition-colors duration-200"
-      >
-        <X size={14} />
+        className="size-3 rounded-full shrink-0"
+        style={{ backgroundColor: category.color }}
+      />
+      <span className="text-sm flex-1 truncate">{category.name}</span>
+      <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            onSetMode("editWave");
+            onSelectCategory(category);
+          }}
+          className="size-6 flex items-center justify-center rounded-md hover:bg-ocean-100 text-muted-foreground hover:text-ocean-700 transition-colors"
+        >
+          <Pencil size={12} />
+        </button>
+        <button
+          onClick={(e) => handleDelete(e, category.id)}
+          className="size-6 flex items-center justify-center rounded-md hover:bg-red-100 text-muted-foreground hover:text-red-600 transition-colors"
+        >
+          <Trash2 size={12} />
+        </button>
       </div>
-    </button>
+    </div>
   );
 };
 

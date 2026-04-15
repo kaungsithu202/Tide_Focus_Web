@@ -1,15 +1,15 @@
 import IfElse from "@/components/common/IfElse";
-import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import {
-  Drawer,
-  DrawerContent,
-  DrawerDescription,
-  DrawerHeader,
-  DrawerTitle,
-  DrawerTrigger,
-} from "@/components/ui/drawer";
-
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogCancel,
+  AlertDialogAction,
+} from "@/components/ui/alert-dialog";
 import {
   Select,
   SelectContent,
@@ -17,12 +17,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 import {
   useCreateSession,
   useGetAllCategories,
@@ -32,22 +26,18 @@ import {
 import { TimerType, type CreateSessionResponse } from "@/features/focus/types";
 import { createFileRoute, useBlocker } from "@tanstack/react-router";
 import {
-  Anchor,
-  CircleAlertIcon,
   CircleCheckBig,
   HourglassIcon,
-  Sailboat,
+  Minus,
+  Play,
+  Pause,
+  Plus,
+  Square,
   Settings,
-  SettingsIcon,
-  Ship,
-  ShipWheel,
   Waves,
 } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 
-import If from "@/components/common/If";
-import { Field, FieldLabel } from "@/components/ui/field";
-import { Input } from "@/components/ui/input";
 import CategoryDialog from "@/features/focus/components/CategoryDialog";
 import { getFocusTime } from "@/lib/datetime";
 import { toast } from "sonner";
@@ -63,20 +53,18 @@ function RouteComponent() {
   const [time, setTime] = useState(0);
   const [isRunning, setIsRunning] = useState(false);
   const [hasStarted, setHasStarted] = useState(false);
-  const [currentSessionId, setCurrentSessionId] = useState(0);
-  const [timerType, setTimerType] = useState("stopwatch");
+  const [currentSessionId, setCurrentSessionId] = useState("");
+  const [timerType, setTimerType] = useState<TimerType>(TimerType.STOPWATCH);
+
+  const timerActive = isRunning || hasStarted;
+
+  const blocker = useBlocker({
+    shouldBlockFn: () => timerActive,
+    enableBeforeUnload: timerActive,
+    withResolver: true,
+  });
 
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
-
-  // useBlocker({
-  //   shouldBlockFn: () => {
-  //     if (!isRunning) return false; // ✅ allow navigation
-  //     const shouldLeave = window.confirm(
-  //       "Timer is still running. Are you sure you want to leave?"
-  //     );
-  //     return !shouldLeave; // ✅ block = true → cancel navigation
-  //   },
-  // });
 
   const startDate = new Date();
   startDate.setHours(0, 0, 0, 0);
@@ -94,8 +82,6 @@ function RouteComponent() {
     0
   );
 
-  // console.log("sessions", sessions);
-
   const { data: categories } = useGetAllCategories();
 
   const { mutate: createSession } = useCreateSession();
@@ -103,10 +89,10 @@ function RouteComponent() {
   const { mutate: sessionAction } = useSessionAction();
 
   const currentCategory = categories?.find(
-    (category) => category.id === Number(selectedCategoryId)
+    (category) => category.id === selectedCategoryId
   );
 
-  const start = () => {
+  const start = useCallback(() => {
     if (!currentCategory) {
       toast.error("Please select your wave first");
       return;
@@ -116,7 +102,7 @@ function RouteComponent() {
       setHasStarted(true);
       createSession(
         {
-          categoryId: currentCategory?.id ?? 0,
+          categoryId: currentCategory.id,
           type: timerType,
           durationSeconds: time,
         },
@@ -130,9 +116,9 @@ function RouteComponent() {
         setTime((prev) => (timerType === "stopwatch" ? prev + 1 : prev - 1));
       }, 1000);
     }
-  };
+  }, [currentCategory, isRunning, timerType, time, createSession]);
 
-  const resume = () => {
+  const resume = useCallback(() => {
     if (!isRunning && hasStarted && currentCategory) {
       setIsRunning(true);
       sessionAction({
@@ -148,10 +134,9 @@ function RouteComponent() {
         setTime((prev) => (timerType === "stopwatch" ? prev + 1 : prev - 1));
       }, 1000);
     }
-  };
+  }, [isRunning, hasStarted, currentCategory, currentSessionId, timerType, time, sessionAction]);
 
-  // Pause the timer
-  const pause = () => {
+  const pause = useCallback(() => {
     if (intervalRef.current && currentCategory) {
       sessionAction({
         action: "pause",
@@ -163,13 +148,11 @@ function RouteComponent() {
         },
       });
       clearInterval(intervalRef.current);
-      // intervalRef.current = null;
       setIsRunning(false);
     }
-  };
+  }, [currentCategory, currentSessionId, timerType, time, sessionAction]);
 
-  // Stop the timer and reset
-  const stop = () => {
+  const stop = useCallback(() => {
     if (intervalRef.current && currentCategory) {
       clearInterval(intervalRef.current);
       sessionAction(
@@ -197,13 +180,13 @@ function RouteComponent() {
     setIsRunning(false);
     setHasStarted(false);
     setTime(0);
-  };
+  }, [currentCategory, currentSessionId, timerType, time, sessionAction]);
 
   useEffect(() => {
-    if (timerType === "timer" && time <= 0) {
+    if (timerType === "timer" && time <= 0 && hasStarted) {
       stop();
     }
-  }, [timerType, time]);
+  }, [timerType, time, hasStarted, stop]);
 
   useEffect(() => {
     return () => {
@@ -225,20 +208,37 @@ function RouteComponent() {
     }
   };
 
+  const switchTimerType = (type: TimerType) => {
+    if (isRunning || hasStarted) return;
+    setTime(type === TimerType.STOPWATCH ? 0 : 1 * 60);
+    setTimerType(type);
+  };
+
+  const statusLabel = isRunning
+    ? "In Flow"
+    : hasStarted
+      ? "Paused"
+      : "Ride the Wave";
+
   return (
-    <div className="container w-full ">
-      <div className="flex items-center gap-5 justify-end mt-3">
-        <div className="flex items-center gap-1.5">
-          <HourglassIcon size={18} />
-          {getFocusTime(totalFocusTime ?? 0)}
+    <div className="min-h-[calc(100vh-4rem)] w-full flex flex-col items-center justify-center px-4 relative">
+      <div className="absolute top-4 right-4 flex items-center gap-4 rounded-full bg-muted/80 backdrop-blur-sm px-5 py-2 text-sm">
+        <div className="flex items-center gap-1.5 text-muted-foreground">
+          <HourglassIcon size={14} />
+          <span className="tabular-nums">{getFocusTime(totalFocusTime ?? 0)}</span>
         </div>
-        <div className="flex items-center gap-1.5">
-          <CircleCheckBig size={18} />
-          {sessions?.length}
+        <div className="h-4 w-px bg-border" />
+        <div className="flex items-center gap-1.5 text-muted-foreground">
+          <CircleCheckBig size={14} />
+          <span className="tabular-nums">{sessions?.length ?? 0}</span>
         </div>
       </div>
-      <div className="flex items-center justify-center w-full mt-5">
-        <div>
+
+      <div className="flex flex-col items-center gap-8 w-full max-w-md">
+        <div className="flex flex-col items-center gap-2 w-full">
+          <span className="text-xs font-medium uppercase tracking-widest text-muted-foreground/70">
+            Current Wave
+          </span>
           <Select
             value={selectedCategoryId}
             onValueChange={setSelectedCategoryId}
@@ -251,16 +251,17 @@ function RouteComponent() {
               setIsOpenSelect(open);
             }}
           >
-            <SelectTrigger className="w-[280px]">
-              <Waves color={currentCategory?.color ?? "#000"} />
-              <SelectValue placeholder="Add your wave">
+            <SelectTrigger className="w-[260px] h-10">
+              <Waves color={currentCategory?.color ?? "var(--color-ocean-700)"} size={16} />
+              <SelectValue placeholder="Select a wave">
                 {currentCategory?.name}
               </SelectValue>
             </SelectTrigger>
             <SelectContent>
               {categories?.map((category) => (
-                <SelectItem key={category.id} value={category.id.toString()}>
-                  <Waves color={category?.color ?? "#000"} /> {category.name}
+                <SelectItem key={category.id} value={category.id}>
+                  <Waves color={category?.color ?? "var(--color-ocean-700)"} size={14} />{" "}
+                  {category.name}
                 </SelectItem>
               ))}
               <button
@@ -270,7 +271,7 @@ function RouteComponent() {
                 }}
                 className="focus:bg-accent focus:text-accent-foreground [&_svg:not([class*='text-'])]:text-muted-foreground relative flex w-full cursor-default items-center gap-2 rounded-sm py-1.5 pr-8 pl-2 text-sm outline-hidden select-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 *:[span]:last:flex *:[span]:last:items-center *:[span]:last:gap-2"
               >
-                <Settings /> Manage Waves
+                <Settings size={14} /> Manage Waves
               </button>
             </SelectContent>
           </Select>
@@ -281,200 +282,155 @@ function RouteComponent() {
           setOpenCategoryDialog={setOpenCategoryDialog}
           categories={categories}
         />
-      </div>
-      <div className="flex items-center justify-center mt-10">
-        <div className=" size-80 rounded-full flex items-center justify-center bg-ocean-100/10">
-          <div className="flex flex-col items-center gap-2">
-            <p className=" font-medium text-ocean-700">Ride the Wave</p>
-            <p className=" font-bold text-6xl  text-ocean-700">
-              {formatTime(time)}
-            </p>
-            <p className=" font-normal text-xs  text-ocean-700">
-              <IfElse
-                isTrue={timerType === TimerType.STOPWATCH}
-                ifBlock="Stopwatch Mode"
-                elseBlock="Timer Mode"
-              />
-            </p>
+
+        <div className="relative flex items-center justify-center">
+          <div
+            className={`size-72 md:size-80 rounded-full flex items-center justify-center border-[3px] transition-all duration-700 ease-out ${
+              isRunning
+                ? "border-ocean-500 bg-ocean-500/5 shadow-[0_0_48px_-8px_rgba(4,150,199,0.25)]"
+                : hasStarted
+                  ? "border-ocean-300 bg-ocean-100/10 opacity-80"
+                  : "border-ocean-300/60 bg-gradient-to-b from-ocean-100/8 to-ocean-100/3"
+            }`}
+            style={!hasStarted ? { animation: "soft-glow 4s ease-in-out infinite" } : undefined}
+          >
+            <div className="flex flex-col items-center gap-2">
+              <p className="text-xs font-medium uppercase tracking-widest text-ocean-700/60 font-original-surfer">
+                {statusLabel}
+              </p>
+              <p className="font-bold text-5xl md:text-6xl tabular-nums text-ocean-700 tracking-tight">
+                {formatTime(time)}
+              </p>
+              <p className="text-xs text-ocean-700/40">
+                <IfElse
+                  isTrue={timerType === TimerType.STOPWATCH}
+                  ifBlock="Stopwatch"
+                  elseBlock="Timer"
+                />
+              </p>
+            </div>
+          </div>
+          {isRunning && (
+            <div className="absolute inset-0 rounded-full border-[3px] border-ocean-500/30 animate-ping [animation-duration:2s] pointer-events-none" />
+          )}
+        </div>
+
+        <div className="flex items-center justify-center">
+          <IfElse
+            isTrue={!hasStarted}
+            ifBlock={
+              <Button
+                onClick={start}
+                className="flex items-center justify-center rounded-full px-8 h-12 bg-ocean-700 hover:bg-ocean-800 text-sm font-medium gap-2"
+              >
+                <Play size={16} className="fill-current" />
+                Start Your Journey
+              </Button>
+            }
+            elseBlock={
+              <div className="flex items-center gap-3">
+                <IfElse
+                  isTrue={isRunning}
+                  ifBlock={
+                    <Button
+                      onClick={pause}
+                      className="rounded-full flex items-center justify-center px-8 h-12 bg-ocean-700 hover:bg-ocean-800 gap-2 text-sm font-medium"
+                    >
+                      <Pause size={16} />
+                      Pause
+                    </Button>
+                  }
+                  elseBlock={
+                    <Button
+                      onClick={resume}
+                      className="rounded-full px-8 h-12 bg-ocean-700 hover:bg-ocean-800 gap-2 text-sm font-medium"
+                    >
+                      <Play size={16} className="fill-current" />
+                      Resume
+                    </Button>
+                  }
+                />
+                <Button
+                  className="rounded-full h-12 w-12 bg-ocean-700 hover:bg-ocean-800"
+                  onClick={stop}
+                  size="icon"
+                >
+                  <Square size={16} className="fill-current" />
+                </Button>
+              </div>
+            }
+          />
+        </div>
+
+        <div className="flex flex-col items-center gap-3">
+          <div className="inline-flex items-center rounded-full bg-muted/80 backdrop-blur-sm p-1">
+            <button
+              onClick={() => switchTimerType(TimerType.TIMER)}
+              disabled={isRunning || hasStarted}
+              className={`rounded-full px-4 py-1.5 text-xs font-medium transition-all duration-200 ${
+                timerType === "timer"
+                  ? "bg-ocean-700 text-white shadow-sm"
+                  : "text-muted-foreground hover:text-foreground"
+              } disabled:opacity-50 disabled:cursor-not-allowed`}
+            >
+              Timer
+            </button>
+            <button
+              onClick={() => switchTimerType(TimerType.STOPWATCH)}
+              disabled={isRunning || hasStarted}
+              className={`rounded-full px-4 py-1.5 text-xs font-medium transition-all duration-200 ${
+                timerType === "stopwatch"
+                  ? "bg-ocean-700 text-white shadow-sm"
+                  : "text-muted-foreground hover:text-foreground"
+              } disabled:opacity-50 disabled:cursor-not-allowed`}
+            >
+              Stopwatch
+            </button>
+          </div>
+
+          <div
+            className={`flex items-center gap-2 rounded-full bg-muted/60 px-3 py-1.5 transition-opacity duration-200 ${
+              timerType === "timer" && !hasStarted
+                ? "opacity-100"
+                : "invisible"
+            }`}
+          >
+            <span className="text-xs text-muted-foreground mr-1">Duration</span>
+            <button
+              disabled={isRunning || hasStarted}
+              onClick={() => setTime((prev) => Math.max(prev - 5 * 60, 60))}
+              className="size-6 rounded-full bg-background flex items-center justify-center hover:bg-ocean-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <Minus size={12} />
+            </button>
+            <span className="text-sm font-medium tabular-nums w-10 text-center">
+              {time === 0 ? 1 : Math.round(time / 60)}m
+            </span>
+            <button
+              disabled={isRunning || hasStarted}
+              onClick={() => setTime((prev) => Math.min(prev + 5 * 60, 600 * 60))}
+              className="size-6 rounded-full bg-background flex items-center justify-center hover:bg-ocean-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <Plus size={12} />
+            </button>
           </div>
         </div>
       </div>
-      <div className="flex items-center justify-center mt-6">
-        <IfElse
-          isTrue={!hasStarted}
-          ifBlock={
-            <Button
-              onClick={start}
-              className=" flex items-center justify-center rounded-full !px-8 py-6 bg-ocean-700"
-            >
-              <Ship /> Start Your Journey
-            </Button>
-          }
-          elseBlock={
-            <div className="flex items-center gap-3">
-              <IfElse
-                isTrue={isRunning} // if running, show Pause
-                ifBlock={
-                  <Button
-                    onClick={pause}
-                    className=" rounded-full flex items-center justify-center  !px-8 py-6 bg-ocean-700"
-                  >
-                    <ShipWheel />
-                    Pause
-                  </Button>
-                }
-                elseBlock={
-                  <Button
-                    onClick={resume}
-                    className=" rounded-full !px-8 py-6 bg-ocean-700"
-                  >
-                    <Sailboat />
-                    Resume
-                  </Button>
-                }
-              />
-              <Tooltip>
-                <TooltipTrigger>
-                  {" "}
-                  <Button
-                    className="rounded-full p-6 !px-4 bg-ocean-700"
-                    onClick={stop}
-                  >
-                    <Anchor />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p className="text-[10px]">End the current journey</p>
-                </TooltipContent>
-              </Tooltip>
-            </div>
-          }
-        />
-      </div>
 
-      <div className="flex items-center justify-center">
-        <Drawer direction="right">
-          <DrawerTrigger>
-            <Button className="mt-3 bg-ocean-700">
-              <SettingsIcon size={16} /> Configure
-            </Button>
-          </DrawerTrigger>
-          <DrawerContent>
-            <DrawerHeader>
-              <DrawerTitle>Focus Settings</DrawerTitle>
-              <DrawerDescription>
-                <If
-                  isTrue={isRunning}
-                  ifBlock={
-                    <Alert variant="default" className="flex items-center my-3">
-                      <CircleAlertIcon />
-                      <AlertDescription className="text-xs">
-                        Finish or stop your session first to unlock the
-                        settings.
-                      </AlertDescription>
-                    </Alert>
-                  }
-                />
-              </DrawerDescription>
-              <Tabs
-                value={timerType}
-                onValueChange={(value) => {
-                  setTime(value === "stopwatch" ? 0 : 1 * 60);
-                  setTimerType(value);
-                }}
-                defaultValue="timer"
-                className="w-full"
-              >
-                <TabsList className="w-full py-6">
-                  <TabsTrigger
-                    disabled={isRunning}
-                    value="timer"
-                    className="p-5 rounded-full"
-                  >
-                    Timer
-                  </TabsTrigger>
-                  <TabsTrigger
-                    disabled={isRunning}
-                    value="stopwatch"
-                    className="p-5 rounded-full"
-                  >
-                    Stopwatch
-                  </TabsTrigger>
-                </TabsList>
-                <TabsContent value="timer">
-                  <Field orientation="horizontal" className="my-3">
-                    <FieldLabel htmlFor="focusDuration" className="">
-                      Focus Duration
-                    </FieldLabel>
-                    <div className="flex items-center gap-3 border px-3 rounded-md">
-                      <button
-                        disabled={isRunning}
-                        onClick={() =>
-                          setTime((prev) => Math.max(prev - 5 * 60, 60))
-                        }
-                      >
-                        -
-                      </button>
-                      <Input
-                        value={time === 0 ? 1 : time / 60}
-                        defaultValue={1}
-                        disabled={isRunning}
-                        type="number"
-                        onChange={(e) => {
-                          const rawValue = e.target.value;
-
-                          // If input is empty, set default to 1 minute
-                          if (rawValue === "" || Number(rawValue) <= 0) {
-                            setTime(60); // 1 minute = 60 seconds
-                            return;
-                          }
-
-                          const value = Number(rawValue);
-                          if (!isNaN(value) && value <= 600) {
-                            setTime(value * 60); // convert minutes → seconds
-                          } else {
-                            setTime(600 * 60);
-                          }
-                        }}
-                        className="outline-none border-none ring-0 shadow-none w-12 text-center focus-visible:ring-1 my-1"
-                        id="focusDuration"
-                        min={1}
-                        max={600}
-                      />
-                      <button
-                        disabled={isRunning}
-                        onClick={() =>
-                          setTime((prev) => Math.min(prev + 5 * 60, 600 * 60))
-                        }
-                      >
-                        +
-                      </button>
-                    </div>
-                  </Field>
-                </TabsContent>
-                <TabsContent value="stopwatch">
-                  {/* <Field orientation="horizontal" className="my-3">
-                    <FieldLabel htmlFor="focusDuration" className="">
-                      Focus Duration
-                    </FieldLabel>
-                    <div className="flex items-center gap-3 border px-3 rounded-md">
-                      <button>-</button>
-                      <Input
-                        className="outline-none border-none ring-0 shadow-none w-11 text-center focus-visible:ring-1 my-1"
-                        id="focusDuration"
-                        autoComplete="off"
-                        placeholder="0"
-                        max={600}
-                      />
-                      <button>+</button>
-                    </div>
-                  </Field> */}
-                </TabsContent>
-              </Tabs>
-            </DrawerHeader>
-          </DrawerContent>
-        </Drawer>
-      </div>
+      <AlertDialog open={blocker.status === "blocked"}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Timer is still running</AlertDialogTitle>
+            <AlertDialogDescription>
+              You have an active session. Leaving now will not stop or save your progress. Are you sure you want to leave?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={blocker.reset}>Stay</AlertDialogCancel>
+            <AlertDialogAction onClick={blocker.proceed}>Leave</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

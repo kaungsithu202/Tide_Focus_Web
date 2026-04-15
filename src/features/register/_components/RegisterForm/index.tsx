@@ -13,7 +13,10 @@ import { Link, useNavigate } from "@tanstack/react-router";
 import { useForm } from "react-hook-form";
 import z from "zod";
 import { useRegister } from "../../_api/_queries";
+import { getPostAuthRedirectTo } from "@/lib/auth";
 import { useAuth } from "@/store";
+import type { RegisterResponse } from "../../_types";
+import { Waves } from "lucide-react";
 
 const registerSchema = z
   .object({
@@ -32,10 +35,17 @@ const registerSchema = z
 
 type FormValues = z.infer<typeof registerSchema>;
 
-function RegisterForm() {
+interface RegisterFormProps {
+  redirectTo?: string;
+}
+
+function RegisterForm({ redirectTo }: RegisterFormProps) {
   const { mutate: register, isPending } = useRegister();
   const navigate = useNavigate();
   const setAccessToken = useAuth((state) => state.setAccessToken);
+  const postAuthRedirectTo = redirectTo
+    ? getPostAuthRedirectTo(redirectTo)
+    : null;
 
   const form = useForm<FormValues>({
     resolver: zodResolver(registerSchema),
@@ -48,111 +58,128 @@ function RegisterForm() {
   });
 
   async function onSubmit(values: FormValues) {
-    register(values, {
-      onSuccess: (res: any) => {
-        setAccessToken(res.accessToken);
-        navigate({
-          href: "/focus",
-          replace: true,
-        });
+    register(
+      {
+        name: values.name,
+        email: values.email,
+        password: values.password,
       },
-    });
+      {
+        onSuccess: (res: RegisterResponse) => {
+          setAccessToken(res.accessToken);
+          navigate({
+            href: getPostAuthRedirectTo(redirectTo),
+            replace: true,
+          });
+        },
+      }
+    );
   }
 
   return (
-    <div className="w-full max-w-lg space-y-8">
+    <div className="w-full max-w-md space-y-8">
       <div className="space-y-2 text-center">
-        <h1 className="text-2xl md:text-4xl font-original-surfer font-semibold tracking-tight">
-          CREATE YOUR ACCOUNT
+        <div className="flex items-center justify-center gap-2 mb-4">
+          <div className="flex size-10 items-center justify-center rounded-lg bg-ocean-700">
+            <Waves size={20} className="text-white" />
+          </div>
+        </div>
+        <h1 className="text-3xl font-original-surfer font-semibold text-ocean-900 tracking-tight">
+          Create your account
         </h1>
-        <p className="text-muted-foreground text-pretty text-sm md:text-base font-original-surfer">
-          Enter your information to get started
+        <p className="text-muted-foreground text-sm">
+          Start your focus journey today
         </p>
+        {postAuthRedirectTo ? (
+          <div className="inline-flex max-w-full items-center rounded-full border border-ocean-200 bg-ocean-50 px-3 py-1 text-xs text-ocean-700 mt-2">
+            After signup, you&apos;ll continue to
+            <span className="ml-1 truncate font-medium">
+              {postAuthRedirectTo}
+            </span>
+          </div>
+        ) : null}
       </div>
 
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <FormField
-                control={form.control}
-                name="name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Name</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Your full name" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
+          <FormField
+            control={form.control}
+            name="name"
+            render={({ field }) => (
+              <FormItem className="space-y-2">
+                <FormLabel className="text-sm font-medium">Name</FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder="Your full name"
+                    className="h-11"
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-            <div className="space-y-2">
-              <FormField
-                control={form.control}
-                name="email"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Email</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="you@example.com"
-                        type="email"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
+          <FormField
+            control={form.control}
+            name="email"
+            render={({ field }) => (
+              <FormItem className="space-y-2">
+                <FormLabel className="text-sm font-medium">Email</FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder="you@example.com"
+                    type="email"
+                    className="h-11"
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-            <div className="space-y-2">
-              <FormField
-                control={form.control}
-                name="password"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Password</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="Enter password"
-                        type="password"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
+          <FormField
+            control={form.control}
+            name="password"
+            render={({ field }) => (
+              <FormItem className="space-y-2">
+                <FormLabel className="text-sm font-medium">Password</FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder="Min. 8 characters"
+                    type="password"
+                    className="h-11"
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-            <div className="space-y-2">
-              <FormField
-                control={form.control}
-                name="confirmPassword"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Confirm Password</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="Repeat your password"
-                        type="password"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-          </div>
+          <FormField
+            control={form.control}
+            name="confirmPassword"
+            render={({ field }) => (
+              <FormItem className="space-y-2">
+                <FormLabel className="text-sm font-medium">Confirm Password</FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder="Repeat your password"
+                    type="password"
+                    className="h-11"
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
           <Button
             type="submit"
-            className="w-full h-9 md:h-11 text-sm md:text-base"
+            className="w-full h-11 text-sm bg-ocean-700 hover:bg-ocean-800"
             disabled={isPending}
           >
             {isPending ? "Creating account..." : "Create account"}
@@ -162,7 +189,8 @@ function RegisterForm() {
             Already have an account?{" "}
             <Link
               to="/login"
-              className="underline underline-offset-4 hover:text-primary transition-colors"
+              search={{ redirect: redirectTo }}
+              className="text-ocean-700 font-medium hover:text-ocean-800 underline underline-offset-4 transition-colors"
             >
               Sign in
             </Link>
@@ -172,19 +200,19 @@ function RegisterForm() {
 
       <div className="text-center text-xs text-muted-foreground">
         By creating an account, you agree to our{" "}
-        <Link
-          to="/terms"
-          className="underline underline-offset-4 hover:text-primary transition-colors"
+        <a
+          href="/terms"
+          className="underline underline-offset-4 hover:text-ocean-700 transition-colors"
         >
           Terms of Service
-        </Link>{" "}
+        </a>{" "}
         and{" "}
-        <Link
-          to="/privacy"
-          className="underline underline-offset-4 hover:text-primary transition-colors"
+        <a
+          href="/privacy"
+          className="underline underline-offset-4 hover:text-ocean-700 transition-colors"
         >
           Privacy Policy
-        </Link>
+        </a>
       </div>
     </div>
   );

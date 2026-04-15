@@ -1,7 +1,13 @@
 export const LOGIN = "/auth/login" as const;
+export const LOGIN_2FA = "/auth/login/2fa" as const;
 export const LOGOUT = "/auth/logout" as const;
 export const REFRESH_TOKEN = "/auth/refresh-token" as const;
 export const CATEGORIES = "/categories" as const;
 export const SESSIONS = "/sessions" as const;
 export const USER = "/user" as const;
 export const REGISTER = "/auth/register" as const;
+export const GENERATE_2FA = "/auth/2fa/generate" as const;
+export const VALIDATE_2FA = "/auth/2fa/validate" as const;
+export const DISABLE_2FA = "/auth/2fa/disable" as const;
+export const FORGOT_PASSWORD = "/auth/forgot-password" as const;
+export const RESET_PASSWORD = "/auth/reset-password" as const;

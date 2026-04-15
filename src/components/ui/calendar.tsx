@@ -14,10 +14,10 @@ import {
 import { cn } from "@/lib/utils";
 import { Button, buttonVariants } from "@/components/ui/button";
 import type { Session } from "@/features/focus/types";
-import { format, isSameDay, parseISO, startOfDay } from "date-fns";
+import { format, isSameDay, parseISO } from "date-fns";
 import { getFocusTime } from "@/lib/datetime";
 
-function getDailyFocusMap(sessions: any[]) {
+function getDailyFocusMap(sessions: Session[]) {
   const dailyMap: Record<string, number> = {};
 
   sessions.forEach((session) => {
@@ -36,11 +36,13 @@ function Calendar({
   buttonVariant = "ghost",
   formatters,
   components,
-  sessions,
+  sessions = [],
+  showSessionTooltips = true,
   ...props
 }: React.ComponentProps<typeof DayPicker> & {
   buttonVariant?: React.ComponentProps<typeof Button>["variant"];
-  sessions: Session[];
+  sessions?: Session[];
+  showSessionTooltips?: boolean;
 }) {
   const defaultClassNames = getDefaultClassNames();
 
@@ -59,9 +61,9 @@ function Calendar({
   };
 
   const modifiersClassNames = {
-    short: "bg-sky-100 text-black rounded-md",
-    medium: "bg-sky-200 text-black rounded-md",
-    long: "bg-sky-500 text-white rounded-md",
+    short: "bg-ocean-100/40 text-foreground rounded-md",
+    medium: "bg-ocean-300/50 text-foreground rounded-md",
+    long: "bg-ocean-700 text-white rounded-md",
   };
   return (
     <DayPicker
@@ -144,12 +146,18 @@ function Calendar({
           defaultClassNames.day
         ),
         range_start: cn(
-          "rounded-l-md bg-accent",
+          "rounded-l-md bg-ocean-700/10",
           defaultClassNames.range_start
         ),
-        range_middle: cn("rounded-none", defaultClassNames.range_middle),
-        range_end: cn("rounded-r-md bg-accent", defaultClassNames.range_end),
-        today: cn("text-black rounded-md ", defaultClassNames.today),
+        range_middle: cn(
+          "rounded-none bg-ocean-700/10",
+          defaultClassNames.range_middle
+        ),
+        range_end: cn(
+          "rounded-r-md bg-ocean-700/10",
+          defaultClassNames.range_end
+        ),
+        today: cn("text-foreground rounded-md font-semibold", defaultClassNames.today),
         outside: cn(
           "text-muted-foreground aria-selected:text-muted-foreground",
           defaultClassNames.outside
@@ -193,7 +201,6 @@ function Calendar({
           );
         },
         DayButton: (props) => {
-          // if (!props.day || !(props.day instanceof Date)) return <></>;
           const day = props.day.date;
           const sessions2 = sessions.filter((s) => isSameDay(day, s.startedAt));
 
@@ -201,13 +208,18 @@ function Calendar({
             (acc, curr) => acc + curr.elapsedSeconds,
             0
           );
+
+          if (!showSessionTooltips) {
+            return <CalendarDayButton {...props} />;
+          }
+
           return (
             <div>
               <Tooltip>
                 <TooltipTrigger asChild>
                   <CalendarDayButton {...props} />
                 </TooltipTrigger>
-                <TooltipContent className="text-[10px] text-sky-600">
+                <TooltipContent className="text-xs text-ocean-700">
                   <p>Focus: {getFocusTime(toalfocusTime ?? 0)}</p>
                   <p>Sessions: {sessions2?.length}</p>
                 </TooltipContent>
@@ -256,6 +268,13 @@ function CalendarDayButton({
       className={cn(
         "flex aspect-square size-auto w-full min-w-(--cell-size) flex-col gap-1 leading-none font-normal [&>span]:text-xs [&>span]:opacity-70",
         defaultClassNames.day,
+        modifiers.range_middle &&
+          "rounded-none bg-transparent text-foreground hover:bg-transparent hover:text-foreground focus-visible:bg-transparent focus-visible:text-foreground",
+        (modifiers.range_start || modifiers.range_end) &&
+          "bg-ocean-700 text-white hover:bg-ocean-700/95 hover:text-white focus-visible:bg-ocean-700 focus-visible:text-white",
+        modifiers.range_start && !modifiers.range_end && "rounded-r-none",
+        modifiers.range_end && !modifiers.range_start && "rounded-l-none",
+        modifiers.range_start && modifiers.range_end && "rounded-md",
         className
       )}
       {...props}

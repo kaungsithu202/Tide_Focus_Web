@@ -9,7 +9,7 @@ const IconBg = ({ children, className }: Props) => {
   return (
     <div
       className={cn(
-        "bg-gray-50 p-1.5 rounded-full flex items-center justify-center",
+        "bg-secondary p-1.5 rounded-full flex items-center justify-center",
         className
       )}
     >

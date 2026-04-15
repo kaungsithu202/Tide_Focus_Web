@@ -5,7 +5,11 @@ export const getRefreshTokenService = async (): Promise<{
   accessToken: string;
   refreshToken: string;
 }> => {
-  return await axiosClient.post(REFRESH_TOKEN);
+  const { data } = await axiosClient.post(REFRESH_TOKEN, undefined, {
+    skipAuthRefresh: true,
+  });
+
+  return data;
 };
 
 export const getLogoutService = async () => {

@@ -3,9 +3,11 @@ import {
   createCategoryService,
   createSessionService,
   deleteCategoryService,
+  deleteSessionService,
   getAllCategoriesService,
   getAllSessionsService,
   sessionActionService,
+  updateCategoryService,
 } from "../services";
 import { categoryKeys } from "./query-keys";
 import type { GetAllSessions } from "../types";
@@ -24,6 +26,16 @@ export const useDeleteCategory = () =>
 export const useCreateCategory = () =>
   useMutation({
     mutationFn: createCategoryService,
+  });
+
+export const useUpdateCategory = () =>
+  useMutation({
+    mutationFn: updateCategoryService,
+  });
+
+export const useDeleteSession = () =>
+  useMutation({
+    mutationFn: deleteSessionService,
   });
 
 export const useGetAllSessions = (payload?: GetAllSessions) =>

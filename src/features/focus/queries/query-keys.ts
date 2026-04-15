@@ -1,4 +1,4 @@
 export const categoryKeys = {
   all: ["categories"] as const,
-  category: (id: number) => [...categoryKeys.all, id] as const,
+  category: (id: string) => [...categoryKeys.all, id] as const,
 };

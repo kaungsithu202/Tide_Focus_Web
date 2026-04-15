@@ -9,15 +9,24 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as RegisterRouteImport } from './routes/register'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
 import { Route as PathlessLayoutRouteImport } from './routes/_pathlessLayout'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as PathlessLayoutWavesRouteImport } from './routes/_pathlessLayout/waves'
 import { Route as PathlessLayoutSettingsRouteImport } from './routes/_pathlessLayout/settings'
 import { Route as PathlessLayoutReviewRouteImport } from './routes/_pathlessLayout/review'
 import { Route as PathlessLayoutOverviewRouteImport } from './routes/_pathlessLayout/overview'
 import { Route as PathlessLayoutFocusRouteImport } from './routes/_pathlessLayout/focus'
+import { Route as PathlessLayoutAnalyticsRouteImport } from './routes/_pathlessLayout/analytics'
 
+const ResetPasswordRoute = ResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const RegisterRoute = RegisterRouteImport.update({
   id: '/register',
   path: '/register',
@@ -28,6 +37,11 @@ const LoginRoute = LoginRouteImport.update({
   path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ForgotPasswordRoute = ForgotPasswordRouteImport.update({
+  id: '/forgot-password',
+  path: '/forgot-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PathlessLayoutRoute = PathlessLayoutRouteImport.update({
   id: '/_pathlessLayout',
   getParentRoute: () => rootRouteImport,
@@ -36,6 +50,11 @@ const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
+} as any)
+const PathlessLayoutWavesRoute = PathlessLayoutWavesRouteImport.update({
+  id: '/waves',
+  path: '/waves',
+  getParentRoute: () => PathlessLayoutRoute,
 } as any)
 const PathlessLayoutSettingsRoute = PathlessLayoutSettingsRouteImport.update({
   id: '/settings',
@@ -57,76 +76,114 @@ const PathlessLayoutFocusRoute = PathlessLayoutFocusRouteImport.update({
   path: '/focus',
   getParentRoute: () => PathlessLayoutRoute,
 } as any)
+const PathlessLayoutAnalyticsRoute = PathlessLayoutAnalyticsRouteImport.update({
+  id: '/analytics',
+  path: '/analytics',
+  getParentRoute: () => PathlessLayoutRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/forgot-password': typeof ForgotPasswordRoute
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
+  '/reset-password': typeof ResetPasswordRoute
+  '/analytics': typeof PathlessLayoutAnalyticsRoute
   '/focus': typeof PathlessLayoutFocusRoute
   '/overview': typeof PathlessLayoutOverviewRoute
   '/review': typeof PathlessLayoutReviewRoute
   '/settings': typeof PathlessLayoutSettingsRoute
+  '/waves': typeof PathlessLayoutWavesRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/forgot-password': typeof ForgotPasswordRoute
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
+  '/reset-password': typeof ResetPasswordRoute
+  '/analytics': typeof PathlessLayoutAnalyticsRoute
   '/focus': typeof PathlessLayoutFocusRoute
   '/overview': typeof PathlessLayoutOverviewRoute
   '/review': typeof PathlessLayoutReviewRoute
   '/settings': typeof PathlessLayoutSettingsRoute
+  '/waves': typeof PathlessLayoutWavesRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_pathlessLayout': typeof PathlessLayoutRouteWithChildren
+  '/forgot-password': typeof ForgotPasswordRoute
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
+  '/reset-password': typeof ResetPasswordRoute
+  '/_pathlessLayout/analytics': typeof PathlessLayoutAnalyticsRoute
   '/_pathlessLayout/focus': typeof PathlessLayoutFocusRoute
   '/_pathlessLayout/overview': typeof PathlessLayoutOverviewRoute
   '/_pathlessLayout/review': typeof PathlessLayoutReviewRoute
   '/_pathlessLayout/settings': typeof PathlessLayoutSettingsRoute
+  '/_pathlessLayout/waves': typeof PathlessLayoutWavesRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/forgot-password'
     | '/login'
     | '/register'
+    | '/reset-password'
+    | '/analytics'
     | '/focus'
     | '/overview'
     | '/review'
     | '/settings'
+    | '/waves'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/forgot-password'
     | '/login'
     | '/register'
+    | '/reset-password'
+    | '/analytics'
     | '/focus'
     | '/overview'
     | '/review'
     | '/settings'
+    | '/waves'
   id:
     | '__root__'
     | '/'
     | '/_pathlessLayout'
+    | '/forgot-password'
     | '/login'
     | '/register'
+    | '/reset-password'
+    | '/_pathlessLayout/analytics'
     | '/_pathlessLayout/focus'
     | '/_pathlessLayout/overview'
     | '/_pathlessLayout/review'
     | '/_pathlessLayout/settings'
+    | '/_pathlessLayout/waves'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   PathlessLayoutRoute: typeof PathlessLayoutRouteWithChildren
+  ForgotPasswordRoute: typeof ForgotPasswordRoute
   LoginRoute: typeof LoginRoute
   RegisterRoute: typeof RegisterRoute
+  ResetPasswordRoute: typeof ResetPasswordRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/reset-password': {
+      id: '/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof ResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/register': {
       id: '/register'
       path: '/register'
@@ -139,6 +196,13 @@ declare module '@tanstack/react-router' {
       path: '/login'
       fullPath: '/login'
       preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/forgot-password': {
+      id: '/forgot-password'
+      path: '/forgot-password'
+      fullPath: '/forgot-password'
+      preLoaderRoute: typeof ForgotPasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_pathlessLayout': {
@@ -154,6 +218,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/_pathlessLayout/waves': {
+      id: '/_pathlessLayout/waves'
+      path: '/waves'
+      fullPath: '/waves'
+      preLoaderRoute: typeof PathlessLayoutWavesRouteImport
+      parentRoute: typeof PathlessLayoutRoute
     }
     '/_pathlessLayout/settings': {
       id: '/_pathlessLayout/settings'
@@ -183,21 +254,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PathlessLayoutFocusRouteImport
       parentRoute: typeof PathlessLayoutRoute
     }
+    '/_pathlessLayout/analytics': {
+      id: '/_pathlessLayout/analytics'
+      path: '/analytics'
+      fullPath: '/analytics'
+      preLoaderRoute: typeof PathlessLayoutAnalyticsRouteImport
+      parentRoute: typeof PathlessLayoutRoute
+    }
   }
 }
 
 interface PathlessLayoutRouteChildren {
+  PathlessLayoutAnalyticsRoute: typeof PathlessLayoutAnalyticsRoute
   PathlessLayoutFocusRoute: typeof PathlessLayoutFocusRoute
   PathlessLayoutOverviewRoute: typeof PathlessLayoutOverviewRoute
   PathlessLayoutReviewRoute: typeof PathlessLayoutReviewRoute
   PathlessLayoutSettingsRoute: typeof PathlessLayoutSettingsRoute
+  PathlessLayoutWavesRoute: typeof PathlessLayoutWavesRoute
 }
 
 const PathlessLayoutRouteChildren: PathlessLayoutRouteChildren = {
+  PathlessLayoutAnalyticsRoute: PathlessLayoutAnalyticsRoute,
   PathlessLayoutFocusRoute: PathlessLayoutFocusRoute,
   PathlessLayoutOverviewRoute: PathlessLayoutOverviewRoute,
   PathlessLayoutReviewRoute: PathlessLayoutReviewRoute,
   PathlessLayoutSettingsRoute: PathlessLayoutSettingsRoute,
+  PathlessLayoutWavesRoute: PathlessLayoutWavesRoute,
 }
 
 const PathlessLayoutRouteWithChildren = PathlessLayoutRoute._addFileChildren(
@@ -207,8 +289,10 @@ const PathlessLayoutRouteWithChildren = PathlessLayoutRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   PathlessLayoutRoute: PathlessLayoutRouteWithChildren,
+  ForgotPasswordRoute: ForgotPasswordRoute,
   LoginRoute: LoginRoute,
   RegisterRoute: RegisterRoute,
+  ResetPasswordRoute: ResetPasswordRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
