@@ -82,6 +82,7 @@ function RouteComponent() {
   });
 
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const defaultTitleRef = useRef("");
 
   const startDate = new Date();
   startDate.setHours(0, 0, 0, 0);
@@ -206,6 +207,23 @@ function RouteComponent() {
     setHasStarted(false);
     setTime(0);
   }, [currentCategory, currentSessionId, timerType, time, sessionAction]);
+
+  useEffect(() => {
+    defaultTitleRef.current = document.title;
+
+    return () => {
+      document.title = defaultTitleRef.current;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (isRunning) {
+      document.title = `${formatTime(time)} | Tide Focus`;
+      return;
+    }
+
+    document.title = defaultTitleRef.current || "Tide Focus";
+  }, [isRunning, time]);
 
   useEffect(() => {
     if (timerType === "timer" && time <= 0 && hasStarted) {
