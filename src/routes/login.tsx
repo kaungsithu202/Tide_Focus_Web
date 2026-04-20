@@ -1,4 +1,5 @@
 import { LoginForm } from "@/components/LoginForm";
+import { useDocumentMetadata } from "@/lib/seo";
 import { createFileRoute } from "@tanstack/react-router";
 import { parseAuthRedirectSearch, redirectIfAuthenticated } from "@/lib/auth";
 
@@ -12,6 +13,13 @@ export const Route = createFileRoute("/login")({
 
 function LoginPage() {
   const { redirect } = Route.useSearch();
+
+  useDocumentMetadata({
+    title: "Log In | Tide Focus",
+    description: "Sign in to Tide Focus and resume your deep work sessions.",
+    robots: "noindex, nofollow",
+    path: "/login",
+  });
 
   return (
     <div className="min-h-screen flex flex-col lg:flex-row">

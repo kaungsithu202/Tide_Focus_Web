@@ -1,4 +1,9 @@
 import { Button } from "@/components/ui/button";
+import {
+  SEO_DEFAULT_DESCRIPTION,
+  SEO_DEFAULT_TITLE,
+  useDocumentMetadata,
+} from "@/lib/seo";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import {
   ArrowRight,
@@ -40,6 +45,13 @@ const sessions = [
 ];
 
 function RouteComponent() {
+  useDocumentMetadata({
+    title: SEO_DEFAULT_TITLE,
+    description: SEO_DEFAULT_DESCRIPTION,
+    robots: "index, follow",
+    path: "/",
+  });
+
   return (
     <div className="relative min-h-screen overflow-hidden">
       <div className="absolute inset-0 bg-gradient-to-b from-ocean-100/15 via-background to-background" />
@@ -101,18 +113,19 @@ function RouteComponent() {
           <div className="max-w-2xl">
             <div className="mb-5 sm:mb-6 inline-flex items-center gap-2 rounded-full border border-ocean-300/50 bg-ocean-100/20 px-3 py-1 text-xs font-medium tracking-wide text-ocean-700">
               <Waves size={13} aria-hidden="true" />
-              Focus sessions for deep workers
+              Focus timer for deep work
             </div>
 
             <h1 className="font-original-surfer text-4xl leading-[1.1] text-ocean-900 md:text-5xl lg:text-6xl lg:leading-[1.08]">
-              Build a calmer workday,
+              A calmer focus timer,
               <br />
               one tide at a time.
             </h1>
 
             <p className="mt-4 max-w-lg text-[15px] leading-7 text-muted-foreground sm:mt-6 sm:text-base md:text-lg md:leading-8">
-              Tide Focus gives you intentional focus sessions, restorative breaks,
-              and lightweight reflection — so you stay consistent without burning out.
+              Tide Focus is a focus timer for deep work with stopwatch and timer
+              sessions, wave-based categories, ambient sound, and lightweight review
+              so you can stay consistent without burning out.
             </p>
 
             <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-3">
@@ -125,6 +138,18 @@ function RouteComponent() {
               <Button size="lg" variant="ghost" asChild className="w-full sm:w-auto">
                 <Link to="/login" className="justify-center">Sign in</Link>
               </Button>
+            </div>
+
+            <div className="mt-6 grid max-w-2xl gap-3 text-sm text-ocean-800 sm:grid-cols-3">
+              <div className="rounded-2xl border border-ocean-200/70 bg-background/75 px-4 py-3 shadow-sm backdrop-blur-sm">
+                Focus timer and stopwatch
+              </div>
+              <div className="rounded-2xl border border-ocean-200/70 bg-background/75 px-4 py-3 shadow-sm backdrop-blur-sm">
+                Session review and analytics
+              </div>
+              <div className="rounded-2xl border border-ocean-200/70 bg-background/75 px-4 py-3 shadow-sm backdrop-blur-sm">
+                Wave categories and ambient audio
+              </div>
             </div>
           </div>
         </section>

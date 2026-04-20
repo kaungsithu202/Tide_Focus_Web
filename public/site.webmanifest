@@ -1,0 +1,17 @@
+{
+  "name": "Tide Focus",
+  "short_name": "Tide Focus",
+  "description": "Tide Focus is a focus timer for deep work with timer and stopwatch sessions, wave-based categories, ambient sound, and lightweight session review.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#02367b",
+  "icons": [
+    {
+      "src": "/images/logo-rm.png",
+      "sizes": "439x437",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}

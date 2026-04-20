@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useForgotPassword } from "@/features/password-reset/queries";
+import { useDocumentMetadata } from "@/lib/seo";
 
 export const Route = createFileRoute("/forgot-password")({
   component: RouteComponent,
@@ -28,6 +29,13 @@ function RouteComponent() {
   const [email, setEmail] = useState("");
   const [submitted, setSubmitted] = useState(false);
   const { mutateAsync: forgotPasswordAsync, isPending } = useForgotPassword();
+
+  useDocumentMetadata({
+    title: "Forgot Password | Tide Focus",
+    description: "Request a secure password reset link for your Tide Focus account.",
+    robots: "noindex, nofollow",
+    path: "/forgot-password",
+  });
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();

@@ -1,5 +1,6 @@
 import { AppSidebar } from "@/components/common/AppSidebar";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { useDocumentMetadata } from "@/lib/seo";
 import { createFileRoute, Outlet } from "@tanstack/react-router";
 import { requireAuth } from "@/lib/auth";
 
@@ -11,6 +12,8 @@ export const Route = createFileRoute("/_pathlessLayout")({
 });
 
 function LayoutComponent() {
+  useDocumentMetadata({ robots: "noindex, nofollow" });
+
   return (
     <SidebarProvider defaultOpen={true}>
       <AppSidebar />

@@ -1,4 +1,5 @@
 import RegisterForm from "@/features/register/_components/RegisterForm";
+import { useDocumentMetadata } from "@/lib/seo";
 import { createFileRoute } from "@tanstack/react-router";
 import { parseAuthRedirectSearch, redirectIfAuthenticated } from "@/lib/auth";
 
@@ -12,6 +13,14 @@ export const Route = createFileRoute("/register")({
 
 function RouteComponent() {
   const { redirect } = Route.useSearch();
+
+  useDocumentMetadata({
+    title: "Create Account | Tide Focus",
+    description:
+      "Create a Tide Focus account and start tracking deep work with a calmer focus timer.",
+    robots: "noindex, nofollow",
+    path: "/register",
+  });
 
   return (
     <div className="min-h-screen flex flex-col lg:flex-row">

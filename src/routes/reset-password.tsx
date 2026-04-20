@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useResetPassword } from "@/features/password-reset/queries";
+import { useDocumentMetadata } from "@/lib/seo";
 
 export const Route = createFileRoute("/reset-password")({
   validateSearch: (search: Record<string, unknown>) => ({
@@ -41,6 +42,13 @@ function RouteComponent() {
   const [showPassword, setShowPassword] = useState(false);
   const [success, setSuccess] = useState(false);
   const { mutateAsync: resetPasswordAsync, isPending } = useResetPassword();
+
+  useDocumentMetadata({
+    title: "Reset Password | Tide Focus",
+    description: "Set a new password and return to your Tide Focus sessions.",
+    robots: "noindex, nofollow",
+    path: "/reset-password",
+  });
 
   const isTokenMissing = token.length === 0;
   const isPasswordLongEnough = newPassword.length >= 8;
