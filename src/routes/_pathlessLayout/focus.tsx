@@ -34,6 +34,8 @@ import {
   Plus,
   Settings,
   Square,
+  Volume2,
+  VolumeX,
   Waves,
 } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -70,6 +72,7 @@ function RouteComponent() {
   const [hasStarted, setHasStarted] = useState(false);
   const [currentSessionId, setCurrentSessionId] = useState("");
   const [timerType, setTimerType] = useState<TimerType>(TimerType.STOPWATCH);
+  const [isSoundEnabled, setIsSoundEnabled] = useState(true);
 
   const timerActive = isRunning || hasStarted;
   const timerTypeLocked = isRunning || hasStarted;
@@ -82,6 +85,7 @@ function RouteComponent() {
   });
 
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const ambientAudioRef = useRef<HTMLAudioElement | null>(null);
   const defaultTitleRef = useRef("");
 
   const startDate = new Date();
@@ -110,6 +114,38 @@ function RouteComponent() {
     (category) => category.id === selectedCategoryId
   );
 
+  const getAmbientAudio = useCallback(() => {
+    if (typeof Audio === "undefined") return null;
+
+    if (!ambientAudioRef.current) {
+      const audio = new Audio("/audio/waves.mp3");
+      audio.loop = true;
+      audio.preload = "auto";
+      audio.volume = 0.45;
+      ambientAudioRef.current = audio;
+    }
+
+    return ambientAudioRef.current;
+  }, []);
+
+  const playAmbientAudio = useCallback(() => {
+    const audio = getAmbientAudio();
+    if (!audio) return;
+
+    void audio.play().catch(() => undefined);
+  }, [getAmbientAudio]);
+
+  const pauseAmbientAudio = useCallback((reset = false) => {
+    const audio = ambientAudioRef.current;
+    if (!audio) return;
+
+    audio.pause();
+
+    if (reset) {
+      audio.currentTime = 0;
+    }
+  }, []);
+
   const start = useCallback(() => {
     if (!currentCategory) {
       toast.error("Please select your wave first");
@@ -118,6 +154,9 @@ function RouteComponent() {
     if (!isRunning) {
       setIsRunning(true);
       setHasStarted(true);
+      if (isSoundEnabled) {
+        playAmbientAudio();
+      }
       createSession(
         {
           categoryId: currentCategory.id,
@@ -134,11 +173,22 @@ function RouteComponent() {
         setTime((prev) => (timerType === "stopwatch" ? prev + 1 : prev - 1));
       }, 1000);
     }
-  }, [currentCategory, isRunning, timerType, time, createSession]);
+  }, [
+    currentCategory,
+    isRunning,
+    timerType,
+    time,
+    createSession,
+    isSoundEnabled,
+    playAmbientAudio,
+  ]);
 
   const resume = useCallback(() => {
     if (!isRunning && hasStarted && currentCategory) {
       setIsRunning(true);
+      if (isSoundEnabled) {
+        playAmbientAudio();
+      }
       sessionAction({
         action: "resume",
         sessionId: currentSessionId,
@@ -160,6 +210,8 @@ function RouteComponent() {
     timerType,
     time,
     sessionAction,
+    isSoundEnabled,
+    playAmbientAudio,
   ]);
 
   const pause = useCallback(() => {
@@ -174,13 +226,22 @@ function RouteComponent() {
         },
       });
       clearInterval(intervalRef.current);
+      pauseAmbientAudio();
       setIsRunning(false);
     }
-  }, [currentCategory, currentSessionId, timerType, time, sessionAction]);
+  }, [
+    currentCategory,
+    currentSessionId,
+    timerType,
+    time,
+    sessionAction,
+    pauseAmbientAudio,
+  ]);
 
   const stop = useCallback(() => {
     if (intervalRef.current && currentCategory) {
       clearInterval(intervalRef.current);
+      pauseAmbientAudio(true);
       sessionAction(
         {
           action: "complete",
@@ -206,7 +267,27 @@ function RouteComponent() {
     setIsRunning(false);
     setHasStarted(false);
     setTime(0);
-  }, [currentCategory, currentSessionId, timerType, time, sessionAction]);
+  }, [
+    currentCategory,
+    currentSessionId,
+    timerType,
+    time,
+    sessionAction,
+    pauseAmbientAudio,
+  ]);
+
+  const toggleSound = useCallback(() => {
+    const nextSoundEnabled = !isSoundEnabled;
+
+    setIsSoundEnabled(nextSoundEnabled);
+
+    if (nextSoundEnabled && isRunning) {
+      playAmbientAudio();
+      return;
+    }
+
+    pauseAmbientAudio();
+  }, [isRunning, isSoundEnabled, pauseAmbientAudio, playAmbientAudio]);
 
   useEffect(() => {
     defaultTitleRef.current = document.title;
@@ -234,8 +315,9 @@ function RouteComponent() {
   useEffect(() => {
     return () => {
       if (intervalRef.current) clearInterval(intervalRef.current);
+      pauseAmbientAudio(true);
     };
-  }, []);
+  }, [pauseAmbientAudio]);
 
   const formatTime = (seconds: number) => {
     const hrs = Math.floor(seconds / 3600);
@@ -515,6 +597,27 @@ function RouteComponent() {
                 </div>
               }
             />
+          </div>
+
+          <div
+            className={cn(FOCUS_REVEAL_CLASS, "flex w-full max-w-xl justify-center")}
+            style={getRevealDelayStyle(280)}
+          >
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              aria-pressed={isSoundEnabled}
+              aria-label={isSoundEnabled ? "Turn ambient sound off" : "Turn ambient sound on"}
+              onClick={toggleSound}
+              className={cn(
+                FOCUS_INTERACTIVE_CLASS,
+                "h-10 rounded-full border-ocean-200/80 bg-background/95 px-4 text-ocean-800 shadow-sm hover:border-ocean-300 hover:bg-ocean-50/70"
+              )}
+            >
+              {isSoundEnabled ? <Volume2 size={16} /> : <VolumeX size={16} />}
+              {isSoundEnabled ? "Sound On" : "Sound Off"}
+            </Button>
           </div>
 
           <div
